@@ -41,9 +41,7 @@ const RenameAction = ({ filesViewRef, file, onRename, triggerAction }) => {
     const invalidCharsRegex = /[\\/:*?"<>|]/;
     if (invalidCharsRegex.test(e.key)) {
       e.preventDefault();
-      setRenameErrorMessage(
-        "A file name can't contain any of the following characters: \\ / : * ? \" < > |"
-      );
+      setRenameErrorMessage("A file name can't contain any of the following characters: \\ / : * ? \" < > |");
       setFileRenameError(true);
     } else {
       setFileRenameError(false);
@@ -71,7 +69,7 @@ const RenameAction = ({ filesViewRef, file, onRename, triggerAction }) => {
             f.isEditing = false;
           }
           return f;
-        })
+        }),
       );
       triggerAction.close();
       return;
@@ -119,16 +117,11 @@ const RenameAction = ({ filesViewRef, file, onRename, triggerAction }) => {
       const renameInputContainerRect = renameInputContainer.getBoundingClientRect();
 
       const rightAvailableSpace = filesContainerRect.right - renameInputContainerRect.left;
-      rightAvailableSpace > errorMessageWidth
-        ? setErrorXPlacement("right")
-        : setErrorXPlacement("left");
+      rightAvailableSpace > errorMessageWidth ? setErrorXPlacement("right") : setErrorXPlacement("left");
 
       const bottomAvailableSpace =
-        filesContainerRect.bottom -
-        (renameInputContainerRect.top + renameInputContainer.clientHeight);
-      bottomAvailableSpace > errorMessageHeight
-        ? setErrorYPlacement("bottom")
-        : setErrorYPlacement("top");
+        filesContainerRect.bottom - (renameInputContainerRect.top + renameInputContainer.clientHeight);
+      bottomAvailableSpace > errorMessageHeight ? setErrorYPlacement("bottom") : setErrorYPlacement("top");
     }
   }, []);
 
@@ -154,11 +147,7 @@ const RenameAction = ({ filesViewRef, file, onRename, triggerAction }) => {
         {...(activeLayout === "list-layout" && { rows: 1 })}
       />
       {fileRenameError && (
-        <ErrorTooltip
-          message={renameErrorMessage}
-          xPlacement={errorXPlacement}
-          yPlacement={errorYPlacement}
-        />
+        <ErrorTooltip message={renameErrorMessage} xPlacement={errorXPlacement} yPlacement={errorYPlacement} />
       )}
 
       <Modal
@@ -173,8 +162,7 @@ const RenameAction = ({ filesViewRef, file, onRename, triggerAction }) => {
             <div className="fm-rename-warning">
               <IoWarningOutline size={70} color="orange" />
               <div>
-                If you change a file name extension, the file might become unusable. Are you sure
-                you want to change it?
+                If you change a file name extension, the file might become unusable. Are you sure you want to change it?
               </div>
             </div>
           </div>
@@ -188,7 +176,7 @@ const RenameAction = ({ filesViewRef, file, onRename, triggerAction }) => {
                       f.isEditing = false;
                     }
                     return f;
-                  })
+                  }),
                 );
                 setRenameFileWarning(false);
                 triggerAction.close();

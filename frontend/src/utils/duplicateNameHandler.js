@@ -1,9 +1,7 @@
 export const duplicateNameHandler = (originalFileName, isDirectory, files) => {
   if (files.find((f) => f.name === originalFileName)) {
     const fileExtension = isDirectory ? "" : "." + originalFileName.split(".").pop();
-    const fileName = isDirectory
-      ? originalFileName
-      : originalFileName.split(".").slice(0, -1).join(".");
+    const fileName = isDirectory ? originalFileName : originalFileName.split(".").slice(0, -1).join(".");
 
     // Generating new file name for duplicate file
     let maxFileNum = 0;

@@ -51,7 +51,7 @@ const UploadItem = ({
           };
         }
         return file;
-      })
+      }),
     );
 
     setUploadFailed(true);
@@ -144,7 +144,7 @@ const UploadItem = ({
             };
           }
           return file;
-        })
+        }),
       );
       fileUpload({ ...fileData, error: false });
       setIsCanceled(false);
@@ -160,9 +160,7 @@ const UploadItem = ({
 
   return (
     <li>
-      <div className="file-icon">
-        {fileIcons[getFileExtension(fileData.file?.name)] ?? <FaRegFile size={33} />}
-      </div>
+      <div className="file-icon">{fileIcons[getFileExtension(fileData.file?.name)] ?? <FaRegFile size={33} />}</div>
       <div className="file">
         <div className="file-details">
           <div className="file-info">
@@ -185,12 +183,7 @@ const UploadItem = ({
             </div>
           )}
         </div>
-        <Progress
-          percent={uploadProgress}
-          isCanceled={isCanceled}
-          isCompleted={isUploaded}
-          error={fileData.error}
-        />
+        <Progress percent={uploadProgress} isCanceled={isCanceled} isCompleted={isUploaded} error={fileData.error} />
       </div>
     </li>
   );

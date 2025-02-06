@@ -30,7 +30,12 @@ const FilesHeader = ({ unselectFiles }) => {
     >
       <div className="file-select-all">
         {(showSelectAll || allFilesSelected) && (
-          <Checkbox checked={allFilesSelected} onChange={handleSelectAll} title="Select all" disabled={currentPathFiles.length === 0} />
+          <Checkbox
+            checked={allFilesSelected}
+            onChange={handleSelectAll}
+            title="Select all"
+            disabled={currentPathFiles.length === 0}
+          />
         )}
       </div>
       <div className="file-name">Name</div>

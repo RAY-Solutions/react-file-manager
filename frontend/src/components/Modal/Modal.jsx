@@ -28,17 +28,10 @@ const Modal = ({
   }, [show]);
 
   return (
-    <dialog
-      ref={modalRef}
-      className={`fm-modal dialog`}
-      style={{ width: dialogWidth }}
-      onKeyDown={handleKeyDown}
-    >
+    <dialog ref={modalRef} className={`fm-modal dialog`} style={{ width: dialogWidth }} onKeyDown={handleKeyDown}>
       <div className="fm-modal-header">
         <span className="fm-modal-heading">{heading}</span>
-        {closeButton && (
-          <MdClose size={18} onClick={() => setShow(false)} className="close-icon" title="Close" />
-        )}
+        {closeButton && <MdClose size={18} onClick={() => setShow(false)} className="close-icon" title="Close" />}
       </div>
       {children}
     </dialog>

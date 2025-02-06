@@ -15,11 +15,7 @@ export const FilesProvider = ({ children, filesData, onError }) => {
     return files.filter((child) => child.path === `${file.path}/${child.name}`);
   };
 
-  return (
-    <FilesContext.Provider value={{ files, setFiles, getChildren, onError }}>
-      {children}
-    </FilesContext.Provider>
-  );
+  return <FilesContext.Provider value={{ files, setFiles, getChildren, onError }}>{children}</FilesContext.Provider>;
 };
 
 export const useFiles = () => useContext(FilesContext);

@@ -1,12 +1,11 @@
 .fm-checkbox {
-    accent-color: white;
+  accent-color: white;
 
-    &:disabled {
-        cursor: default !important;
-    }
+  &:disabled {
+    cursor: default !important;
+  }
 
-    &:hover {
-        cursor: pointer;
-    }
-
+  &:hover {
+    cursor: pointer;
+  }
 }

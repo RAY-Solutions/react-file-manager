@@ -3,7 +3,7 @@ export const dateStringValidator = (props, propName, componentName) => {
 
   if (value && isNaN(Date.parse(value))) {
     return new Error(
-      `Invalid prop \`${propName}\` supplied to \`${componentName}\`. Expected a valid date string (ISO 8601) but received \`${value}\`.`
+      `Invalid prop \`${propName}\` supplied to \`${componentName}\`. Expected a valid date string (ISO 8601) but received \`${value}\`.`,
     );
   }
 };
@@ -16,7 +16,7 @@ export const urlValidator = (props, propName, componentName) => {
     return;
   } catch (error) {
     return new Error(
-      `Invalid prop \`${propName}\` supplied to \`${componentName}\`. Expected a valid URL but received \`${url}\`.`
+      `Invalid prop \`${propName}\` supplied to \`${componentName}\`. Expected a valid URL but received \`${url}\`.`,
     );
   }
 };

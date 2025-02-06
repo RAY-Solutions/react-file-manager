@@ -50,9 +50,7 @@ svg {
 
   .files-container {
     display: flex;
-    height: calc(
-      100% - 46px
-    ); // Toolbar total height = baseHeight: 35px, padding top + bottom: 10px, border: 1px.
+    height: calc(100% - 46px); // Toolbar total height = baseHeight: 35px, padding top + bottom: 10px, border: 1px.
 
     .navigation-pane {
       z-index: 1;

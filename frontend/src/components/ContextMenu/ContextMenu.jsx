@@ -99,11 +99,7 @@ const ContextMenu = ({ filesViewRef, contextMenuRef, menuItems, visible, clickPo
                         <>
                           <FaChevronRight size={14} className="list-expand-icon" />
                           {activeSubMenu && (
-                            <SubMenu
-                              subMenuRef={subMenuRef}
-                              list={item.children}
-                              position={subMenuPosition}
-                            />
+                            <SubMenu subMenuRef={subMenuRef} list={item.children} position={subMenuPosition} />
                           )}
                         </>
                       )}

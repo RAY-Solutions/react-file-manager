@@ -23,10 +23,7 @@ const PreviewFileAction = ({ filePreviewPath, filePreviewComponent }) => {
   const filePath = `${filePreviewPath}${selectedFiles[0].path}`;
 
   // Custom file preview component
-  const customPreview = useMemo(
-    () => filePreviewComponent?.(selectedFiles[0]),
-    [filePreviewComponent]
-  );
+  const customPreview = useMemo(() => filePreviewComponent?.(selectedFiles[0]), [filePreviewComponent]);
 
   const handleImageLoad = () => {
     setIsLoading(false); // Loading is complete
@@ -49,12 +46,7 @@ const PreviewFileAction = ({ filePreviewPath, filePreviewComponent }) => {
   return (
     <section className={`file-previewer ${extension === "pdf" ? "pdf-previewer" : ""}`}>
       {hasError ||
-        (![
-          ...imageExtensions,
-          ...videoExtensions,
-          ...audioExtensions,
-          ...iFrameExtensions,
-        ].includes(extension) && (
+        (![...imageExtensions, ...videoExtensions, ...audioExtensions, ...iFrameExtensions].includes(extension) && (
           <div className="preview-error">
             <span className="error-icon">{fileIcons[extension] ?? <FaRegFileAlt size={73} />}</span>
             <span className="error-msg">Sorry! Preview is not available for this file.</span>
@@ -84,12 +76,8 @@ const PreviewFileAction = ({ filePreviewPath, filePreviewComponent }) => {
           />
         </>
       )}
-      {videoExtensions.includes(extension) && (
-        <video src={filePath} className="video-preview" controls autoPlay />
-      )}
-      {audioExtensions.includes(extension) && (
-        <audio src={filePath} controls autoPlay className="audio-preview" />
-      )}
+      {videoExtensions.includes(extension) && <video src={filePath} className="video-preview" controls autoPlay />}
+      {audioExtensions.includes(extension) && <audio src={filePath} controls autoPlay className="audio-preview" />}
       {iFrameExtensions.includes(extension) && (
         <>
           <iframe

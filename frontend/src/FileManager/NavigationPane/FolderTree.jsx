@@ -37,15 +37,9 @@ const FolderTree = ({ folder }) => {
   if (folder.subDirectories.length > 0) {
     return (
       <>
-        <div
-          className={`sb-folders-list-item ${isActive ? "active-list-item" : ""}`}
-          onClick={handleFolderSwitch}
-        >
+        <div className={`sb-folders-list-item ${isActive ? "active-list-item" : ""}`} onClick={handleFolderSwitch}>
           <span onClick={handleCollapseChange}>
-            <MdKeyboardArrowRight
-              size={20}
-              className={`folder-icon-default ${isOpen ? "folder-rotate-down" : ""}`}
-            />
+            <MdKeyboardArrowRight size={20} className={`folder-icon-default ${isOpen ? "folder-rotate-down" : ""}`} />
           </span>
           <div className="sb-folder-details">
             {isOpen || isActive ? (
@@ -69,10 +63,7 @@ const FolderTree = ({ folder }) => {
     );
   } else {
     return (
-      <div
-        className={`sb-folders-list-item ${isActive ? "active-list-item" : ""}`}
-        onClick={handleFolderSwitch}
-      >
+      <div className={`sb-folders-list-item ${isActive ? "active-list-item" : ""}`} onClick={handleFolderSwitch}>
         <span className="non-expanable"></span>
         <div className="sb-folder-details">
           {isActive ? (

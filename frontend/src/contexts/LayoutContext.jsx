@@ -10,11 +10,7 @@ export const LayoutProvider = ({ children, layout }) => {
     return acceptedValue.includes(layout) ? layout : "grid-layout";
   }
 
-  return (
-    <LayoutContext.Provider value={{ activeLayout, setActiveLayout }}>
-      {children}
-    </LayoutContext.Provider>
-  );
+  return <LayoutContext.Provider value={{ activeLayout, setActiveLayout }}>{children}</LayoutContext.Provider>;
 };
 
 export const useLayout = () => useContext(LayoutContext);

@@ -8,14 +8,7 @@ import useFileList from "./useFileList";
 import FilesHeader from "./FilesHeader";
 import "./FileList.scss";
 
-const FileList = ({
-  onCreateFolder,
-  onRename,
-  onFileOpen,
-  onRefresh,
-  enableFilePreview,
-  triggerAction,
-}) => {
+const FileList = ({ onCreateFolder, onRename, onFileOpen, onRefresh, enableFilePreview, triggerAction }) => {
   const { currentPathFiles } = useFileNavigation();
   const filesViewRef = useRef(null);
   const { activeLayout } = useLayout();
@@ -42,9 +35,7 @@ const FileList = ({
       onContextMenu={handleContextMenu}
       onClick={unselectFiles}
     >
-      {activeLayout === "list-layout" && (
-        <FilesHeader unselectFiles={unselectFiles} />
-      )}
+      {activeLayout === "list-layout" && <FilesHeader unselectFiles={unselectFiles} />}
 
       {currentPathFiles?.length > 0 ? (
         <>

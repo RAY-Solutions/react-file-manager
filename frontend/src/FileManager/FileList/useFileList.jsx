@@ -2,11 +2,7 @@ import { BiRename, BiSelectMultiple } from "react-icons/bi";
 import { BsCopy, BsFolderPlus, BsGrid, BsScissors } from "react-icons/bs";
 import { FaListUl, FaRegFile, FaRegPaste } from "react-icons/fa6";
 import { FiRefreshCw } from "react-icons/fi";
-import {
-  MdOutlineDelete,
-  MdOutlineFileDownload,
-  MdOutlineFileUpload,
-} from "react-icons/md";
+import { MdOutlineDelete, MdOutlineFileDownload, MdOutlineFileUpload } from "react-icons/md";
 import { PiFolderOpen } from "react-icons/pi";
 import { useClipBoard } from "../../contexts/ClipboardContext";
 import { useEffect, useState } from "react";
@@ -23,11 +19,9 @@ const useFileList = (onRefresh, enableFilePreview, triggerAction) => {
   const [clickPosition, setClickPosition] = useState({ clickX: 0, clickY: 0 });
   const [lastSelectedFile, setLastSelectedFile] = useState(null);
 
-  const { clipBoard, setClipBoard, handleCutCopy, handlePasting } =
-    useClipBoard();
+  const { clipBoard, setClipBoard, handleCutCopy, handlePasting } = useClipBoard();
   const { selectedFiles, setSelectedFiles, handleDownload } = useSelection();
-  const { currentPath, setCurrentPath, currentPathFiles, setCurrentPathFiles } =
-    useFileNavigation();
+  const { currentPath, setCurrentPath, currentPathFiles, setCurrentPathFiles } = useFileNavigation();
   const { activeLayout, setActiveLayout } = useLayout();
 
   // Context Menu
@@ -91,12 +85,7 @@ const useFileList = (onRefresh, enableFilePreview, triggerAction) => {
   const emptySelecCtxItems = [
     {
       title: "View",
-      icon:
-        activeLayout === "grid-layout" ? (
-          <BsGrid size={18} />
-        ) : (
-          <FaListUl size={18} />
-        ),
+      icon: activeLayout === "grid-layout" ? <BsGrid size={18} /> : <FaListUl size={18} />,
       onClick: () => {},
       children: [
         {
@@ -146,11 +135,7 @@ const useFileList = (onRefresh, enableFilePreview, triggerAction) => {
   const selecCtxItems = [
     {
       title: "Open",
-      icon: lastSelectedFile?.isDirectory ? (
-        <PiFolderOpen size={20} />
-      ) : (
-        <FaRegFile size={16} />
-      ),
+      icon: lastSelectedFile?.isDirectory ? <PiFolderOpen size={20} /> : <FaRegFile size={16} />,
       onClick: handleFileOpen,
       divider: true,
     },
@@ -255,9 +240,7 @@ const useFileList = (onRefresh, enableFilePreview, triggerAction) => {
     if (selectedFiles.length > 0) {
       setSelectedFileIndexes(() => {
         return selectedFiles.map((selectedFile) => {
-          return currentPathFiles.findIndex(
-            (f) => f.path === selectedFile.path
-          );
+          return currentPathFiles.findIndex((f) => f.path === selectedFile.path);
         });
       });
     } else {

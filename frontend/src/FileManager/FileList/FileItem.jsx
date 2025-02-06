@@ -37,14 +37,11 @@ const FileItem = ({
   const fileIcons = useFileIcons(iconSize);
   const { setCurrentPath, currentPathFiles } = useFileNavigation();
   const { setSelectedFiles } = useSelection();
-  const { clipBoard, handleCutCopy, setClipBoard, handlePasting } =
-    useClipBoard();
+  const { clipBoard, handleCutCopy, setClipBoard, handlePasting } = useClipBoard();
   const dragIconRef = useRef(null);
   const dragIcons = useFileIcons(dragIconSize);
 
-  const isFileMoving =
-    clipBoard?.isMoving &&
-    clipBoard.files.find((f) => f.name === file.name && f.path === file.path);
+  const isFileMoving = clipBoard?.isMoving && clipBoard.files.find((f) => f.name === file.name && f.path === file.path);
 
   const handleFileAccess = () => {
     onFileOpen(file);
@@ -135,9 +132,7 @@ const FileItem = ({
     if (e.target.checked) {
       setSelectedFiles((prev) => [...prev, file]);
     } else {
-      setSelectedFiles((prev) =>
-        prev.filter((f) => f.name !== file.name && f.path !== file.path)
-      );
+      setSelectedFiles((prev) => prev.filter((f) => f.name !== file.name && f.path !== file.path));
     }
 
     setFileSelected(e.target.checked);
@@ -182,9 +177,7 @@ const FileItem = ({
 
   useEffect(() => {
     setFileSelected(selectedFileIndexes.includes(index));
-    setCheckboxClassName(
-      selectedFileIndexes.includes(index) ? "visible" : "hidden"
-    );
+    setCheckboxClassName(selectedFileIndexes.includes(index) ? "visible" : "hidden");
   }, [selectedFileIndexes]);
 
   return (
@@ -221,11 +214,7 @@ const FileItem = ({
         {file.isDirectory ? (
           <FaRegFolderOpen size={iconSize} />
         ) : (
-          <>
-            {fileIcons[file.name?.split(".").pop()?.toLowerCase()] ?? (
-              <FaRegFile size={iconSize} />
-            )}
-          </>
+          <>{fileIcons[file.name?.split(".").pop()?.toLowerCase()] ?? <FaRegFile size={iconSize} />}</>
         )}
 
         {file.isEditing ? (
@@ -238,12 +227,7 @@ const FileItem = ({
                 triggerAction={triggerAction}
               />
             ) : (
-              <RenameAction
-                filesViewRef={filesViewRef}
-                file={file}
-                onRename={onRename}
-                triggerAction={triggerAction}
-              />
+              <RenameAction filesViewRef={filesViewRef} file={file} onRename={onRename} triggerAction={triggerAction} />
             )}
           </div>
         ) : (
@@ -254,9 +238,7 @@ const FileItem = ({
       {activeLayout === "list-layout" && (
         <>
           <div className="modified-date">{formatDate(file.updatedAt)}</div>
-          <div className="size">
-            {file?.size > 0 ? getDataSize(file?.size) : ""}
-          </div>
+          <div className="size">{file?.size > 0 ? getDataSize(file?.size) : ""}</div>
         </>
       )}
 
@@ -277,11 +259,7 @@ const FileItem = ({
         {file.isDirectory ? (
           <FaRegFolderOpen size={dragIconSize} />
         ) : (
-          <>
-            {dragIcons[file.name?.split(".").pop()?.toLowerCase()] ?? (
-              <FaRegFile size={dragIconSize} />
-            )}
-          </>
+          <>{dragIcons[file.name?.split(".").pop()?.toLowerCase()] ?? <FaRegFile size={dragIconSize} />}</>
         )}
       </div>
       {/* Drag Icon & Tooltip Setup */}

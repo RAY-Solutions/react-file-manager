@@ -9,13 +9,7 @@ import { getDataSize } from "../../../utils/getDataSize";
 import { useFiles } from "../../../contexts/FilesContext";
 import "./UploadFile.action.scss";
 
-const UploadFileAction = ({
-  fileUploadConfig,
-  maxFileSize,
-  acceptedFileTypes,
-  onFileUploading,
-  onFileUploaded,
-}) => {
+const UploadFileAction = ({ fileUploadConfig, maxFileSize, acceptedFileTypes, onFileUploading, onFileUploaded }) => {
   const [files, setFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState({});
@@ -37,7 +31,7 @@ const UploadFileAction = ({
     }
 
     const fileExists = currentPathFiles.some(
-      (item) => item.name.toLowerCase() === file.name.toLowerCase() && !item.isDirectory
+      (item) => item.name.toLowerCase() === file.name.toLowerCase() && !item.isDirectory,
     );
     if (fileExists) return "File already exists.";
 
@@ -47,8 +41,7 @@ const UploadFileAction = ({
 
   const setSelectedFiles = (selectedFiles) => {
     selectedFiles = selectedFiles.filter(
-      (item) =>
-        !files.some((fileData) => fileData.file.name.toLowerCase() === item.name.toLowerCase())
+      (item) => !files.some((fileData) => fileData.file.name.toLowerCase() === item.name.toLowerCase()),
     );
 
     if (selectedFiles.length > 0) {

@@ -45,12 +45,7 @@ const Actions = ({
     },
     previewFile: {
       title: "Preview",
-      component: (
-        <PreviewFileAction
-          filePreviewPath={filePreviewPath}
-          filePreviewComponent={filePreviewComponent}
-        />
-      ),
+      component: <PreviewFileAction filePreviewPath={filePreviewPath} filePreviewComponent={filePreviewComponent} />,
       width: "50%",
     },
   };

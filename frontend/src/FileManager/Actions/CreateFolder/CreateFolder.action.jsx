@@ -38,7 +38,7 @@ const CreateFolderAction = ({ filesViewRef, file, onCreateFolder, triggerAction 
       return;
     }
 
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       e.preventDefault();
       triggerAction.close();
       setCurrentPathFiles((prev) => prev.filter((f) => f.key !== file.key));
@@ -47,9 +47,7 @@ const CreateFolderAction = ({ filesViewRef, file, onCreateFolder, triggerAction 
     const invalidCharsRegex = /[\\/:*?"<>|]/;
     if (invalidCharsRegex.test(e.key)) {
       e.preventDefault();
-      setFolderErrorMessage(
-        "A file name can't contain any of the following characters: \\ / : * ? \" < > |"
-      );
+      setFolderErrorMessage("A file name can't contain any of the following characters: \\ / : * ? \" < > |");
       setFolderNameError(true);
     } else {
       setFolderNameError(false);
@@ -112,15 +110,11 @@ const CreateFolderAction = ({ filesViewRef, file, onCreateFolder, triggerAction 
       const nameInputContainerRect = nameInputContainer.getBoundingClientRect();
 
       const rightAvailableSpace = filesContainerRect.right - nameInputContainerRect.left;
-      rightAvailableSpace > errorMessageWidth
-        ? setErrorXPlacement("right")
-        : setErrorXPlacement("left");
+      rightAvailableSpace > errorMessageWidth ? setErrorXPlacement("right") : setErrorXPlacement("left");
 
       const bottomAvailableSpace =
         filesContainerRect.bottom - (nameInputContainerRect.top + nameInputContainer.clientHeight);
-      bottomAvailableSpace > errorMessageHeight
-        ? setErrorYPlacement("bottom")
-        : setErrorYPlacement("top");
+      bottomAvailableSpace > errorMessageHeight ? setErrorYPlacement("bottom") : setErrorYPlacement("top");
     }
   }, []);
   //
@@ -143,11 +137,7 @@ const CreateFolderAction = ({ filesViewRef, file, onCreateFolder, triggerAction 
         {...(activeLayout === "list-layout" && { rows: 1 })}
       />
       {folderNameError && (
-        <ErrorTooltip
-          message={folderErrorMessage}
-          xPlacement={errorXPlacement}
-          yPlacement={errorYPlacement}
-        />
+        <ErrorTooltip message={folderErrorMessage} xPlacement={errorXPlacement} yPlacement={errorYPlacement} />
       )}
     </>
   );
