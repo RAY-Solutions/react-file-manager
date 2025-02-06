@@ -90,6 +90,10 @@ svg {
   }
 }
 
+.file-explorer * {
+  box-sizing: content-box !important;
+}
+
 .close-icon {
   padding: 5px;
   border-radius: 50%;

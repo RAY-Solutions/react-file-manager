@@ -27,7 +27,8 @@ const Toolbar = ({
   const [showToggleViewMenu, setShowToggleViewMenu] = useState(false);
   const { currentFolder } = useFileNavigation();
   const { selectedFiles, setSelectedFiles, handleDownload } = useSelection();
-  const { clipBoard, setClipBoard, handleCutCopy, handlePasting } = useClipBoard();
+  const { clipBoard, setClipBoard, handleCutCopy, handlePasting } =
+    useClipBoard();
   const { activeLayout } = useLayout();
 
   // Toolbar Items
@@ -54,7 +55,12 @@ const Toolbar = ({
 
   const toolbarRightItems = [
     {
-      icon: activeLayout === "grid" ? <BsGridFill size={16} /> : <FaListUl size={16} />,
+      icon:
+        activeLayout === "grid-layout" ? (
+          <BsGridFill size={16} />
+        ) : (
+          <FaListUl size={16} />
+        ),
       title: "Change View",
       onClick: () => setShowToggleViewMenu((prev) => !prev),
     },
@@ -83,11 +89,17 @@ const Toolbar = ({
       <div className="toolbar file-selected">
         <div className="file-action-container">
           <div>
-            <button className="item-action file-action" onClick={() => handleCutCopy(true)}>
+            <button
+              className="item-action file-action"
+              onClick={() => handleCutCopy(true)}
+            >
               <BsScissors size={18} />
               <span>Cut</span>
             </button>
-            <button className="item-action file-action" onClick={() => handleCutCopy(false)}>
+            <button
+              className="item-action file-action"
+              onClick={() => handleCutCopy(false)}
+            >
               <BsCopy strokeWidth={0.1} size={17} />
               <span>Copy</span>
             </button>
@@ -111,7 +123,10 @@ const Toolbar = ({
               </button>
             )}
             {!selectedFiles.isDirectory && (
-              <button className="item-action file-action" onClick={handleDownloadItems}>
+              <button
+                className="item-action file-action"
+                onClick={handleDownloadItems}
+              >
                 <MdOutlineFileDownload size={19} />
                 <span>Download</span>
               </button>
@@ -130,7 +145,8 @@ const Toolbar = ({
             onClick={() => setSelectedFiles([])}
           >
             <span>
-              {selectedFiles.length} item{selectedFiles.length > 1 && "s"} selected
+              {selectedFiles.length} item{selectedFiles.length > 1 && "s"}{" "}
+              selected
             </span>
             <MdClear size={18} />
           </button>
@@ -147,7 +163,11 @@ const Toolbar = ({
           {toolbarLeftItems
             .filter((item) => item.permission)
             .map((item, index) => (
-              <button className="item-action" key={index} onClick={item.onClick}>
+              <button
+                className="item-action"
+                key={index}
+                onClick={item.onClick}
+              >
                 {item.icon}
                 <span>{item.text}</span>
               </button>
@@ -156,10 +176,16 @@ const Toolbar = ({
         <div>
           {toolbarRightItems.map((item, index) => (
             <div key={index} className="toolbar-left-items">
-              <button className="item-action icon-only" title={item.title} onClick={item.onClick}>
+              <button
+                className="item-action icon-only"
+                title={item.title}
+                onClick={item.onClick}
+              >
                 {item.icon}
               </button>
-              {index !== toolbarRightItems.length - 1 && <div className="item-separator"></div>}
+              {index !== toolbarRightItems.length - 1 && (
+                <div className="item-separator"></div>
+              )}
             </div>
           ))}
 

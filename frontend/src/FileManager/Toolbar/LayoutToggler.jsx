@@ -11,12 +11,12 @@ const LayoutToggler = ({ setShowToggleViewMenu, onLayoutChange }) => {
 
   const layoutOptions = [
     {
-      key: "grid",
+      key: "grid-layout",
       name: "Grid",
       icon: <BsGridFill size={18} />,
     },
     {
-      key: "list",
+      key: "list-layout",
       name: "List",
       icon: <FaListUl size={18} />,
     },

@@ -88,7 +88,7 @@
       text-align: center;
     }
 
-    .rename-file-container.list {
+    .rename-file-container.list-layout {
       top: 6px;
       left: 58px;
       text-align: left;
@@ -129,7 +129,7 @@
   }
 }
 
-.files.list {
+.files.list-layout {
   flex-direction: column;
   flex-wrap: nowrap;
   gap: 0;

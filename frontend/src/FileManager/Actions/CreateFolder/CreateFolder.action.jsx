@@ -140,7 +140,7 @@ const CreateFolderAction = ({ filesViewRef, file, onCreateFolder, triggerAction 
         onChange={handleFolderNameChange}
         onKeyDown={handleValidateFolderName}
         onClick={(e) => e.stopPropagation()}
-        {...(activeLayout === "list" && { rows: 1 })}
+        {...(activeLayout === "list-layout" && { rows: 1 })}
       />
       {folderNameError && (
         <ErrorTooltip

@@ -151,7 +151,7 @@ const RenameAction = ({ filesViewRef, file, onRename, triggerAction }) => {
         }}
         onKeyDown={handleValidateFolderRename}
         onClick={(e) => e.stopPropagation()}
-        {...(activeLayout === "list" && { rows: 1 })}
+        {...(activeLayout === "list-layout" && { rows: 1 })}
       />
       {fileRenameError && (
         <ErrorTooltip

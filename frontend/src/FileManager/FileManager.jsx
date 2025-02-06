@@ -12,7 +12,10 @@ import { LayoutProvider } from "../contexts/LayoutContext";
 import { useTriggerAction } from "../hooks/useTriggerAction";
 import { useColumnResize } from "../hooks/useColumnResize";
 import PropTypes from "prop-types";
-import { dateStringValidator, urlValidator } from "../validators/propValidators";
+import {
+  dateStringValidator,
+  urlValidator,
+} from "../validators/propValidators";
 import "./FileManager.scss";
 
 const FileManager = ({
@@ -32,7 +35,7 @@ const FileManager = ({
   onRefresh,
   onFileOpen = () => {},
   onError = () => {},
-  layout = "grid",
+  layout = "grid-layout",
   enableFilePreview = true,
   maxFileSize,
   filePreviewPath,
@@ -45,8 +48,14 @@ const FileManager = ({
   fontFamily = "Nunito Sans, sans-serif",
 }) => {
   const triggerAction = useTriggerAction();
-  const { containerRef, colSizes, isDragging, handleMouseMove, handleMouseUp, handleMouseDown } =
-    useColumnResize(20, 80);
+  const {
+    containerRef,
+    colSizes,
+    isDragging,
+    handleMouseMove,
+    handleMouseUp,
+    handleMouseDown,
+  } = useColumnResize(20, 80);
   const customStyles = {
     "--file-manager-font-family": fontFamily,
     "--file-manager-primary-color": primaryColor,
@@ -55,7 +64,11 @@ const FileManager = ({
   };
 
   return (
-    <main className="file-explorer" onContextMenu={(e) => e.preventDefault()} style={customStyles}>
+    <main
+      className="file-explorer"
+      onContextMenu={(e) => e.preventDefault()}
+      style={customStyles}
+    >
       <Loader loading={isLoading} />
       <FilesProvider filesData={files} onError={onError}>
         <FileNavigationProvider initialPath={initialPath}>
@@ -75,15 +88,23 @@ const FileManager = ({
                   onMouseUp={handleMouseUp}
                   className="files-container"
                 >
-                  <div className="navigation-pane" style={{ width: colSizes.col1 + "%" }}>
+                  <div
+                    className="navigation-pane"
+                    style={{ width: colSizes.col1 + "%" }}
+                  >
                     <NavigationPane />
                     <div
-                      className={`sidebar-resize ${isDragging ? "sidebar-dragging" : ""}`}
+                      className={`sidebar-resize ${
+                        isDragging ? "sidebar-dragging" : ""
+                      }`}
                       onMouseDown={handleMouseDown}
                     />
                   </div>
 
-                  <div className="folders-preview" style={{ width: colSizes.col2 + "%" }}>
+                  <div
+                    className="folders-preview"
+                    style={{ width: colSizes.col2 + "%" }}
+                  >
                     <BreadCrumb />
                     <FileList
                       onCreateFolder={onCreateFolder}
@@ -147,7 +168,7 @@ FileManager.propTypes = {
   onRefresh: PropTypes.func,
   onFileOpen: PropTypes.func,
   onError: PropTypes.func,
-  layout: PropTypes.oneOf(["grid", "list"]),
+  layout: PropTypes.oneOf(["grid-layout", "list-layout"]),
   maxFileSize: PropTypes.number,
   enableFilePreview: PropTypes.bool,
   filePreviewPath: urlValidator,

@@ -6,8 +6,8 @@ export const LayoutProvider = ({ children, layout }) => {
   const [activeLayout, setActiveLayout] = useState(() => validateLayout(layout));
 
   function validateLayout(layout) {
-    const acceptedValue = ["list", "grid"];
-    return acceptedValue.includes(layout) ? layout : "grid";
+    const acceptedValue = ["list-layout", "grid-layout"];
+    return acceptedValue.includes(layout) ? layout : "grid-layout";
   }
 
   return (

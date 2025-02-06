@@ -42,7 +42,9 @@ const FileList = ({
       onContextMenu={handleContextMenu}
       onClick={unselectFiles}
     >
-      {activeLayout === "list" && <FilesHeader unselectFiles={unselectFiles} />}
+      {activeLayout === "list-layout" && (
+        <FilesHeader unselectFiles={unselectFiles} />
+      )}
 
       {currentPathFiles?.length > 0 ? (
         <>
