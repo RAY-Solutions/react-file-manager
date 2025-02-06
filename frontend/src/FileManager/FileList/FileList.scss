@@ -1,4 +1,4 @@
-@import "../../styles/variables";
+@use "../../styles/variables" as *;
 
 .files {
   position: relative;
@@ -14,7 +14,7 @@
 
   .drag-move-tooltip {
     background-color: white;
-    font-size: .78em;
+    font-size: 0.78em;
     position: fixed;
     text-wrap: nowrap;
     border: 1px dashed black;
@@ -37,7 +37,7 @@
       position: absolute !important;
       top: -1000px;
       left: -1000px;
-      z-Index: -1;
+      z-index: -1;
       border-radius: 4px;
       position: relative;
       color: white;

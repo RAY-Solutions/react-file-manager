@@ -1,4 +1,4 @@
-@import "../../styles/variables";
+@use "../../styles/variables" as *;
 
 .bread-crumb-container {
   position: relative;
@@ -10,7 +10,7 @@
     display: flex;
     gap: 0.5rem;
     border-bottom: 1px solid $border-color;
-    padding: 6px 0 6PX 15px;
+    padding: 6px 0 6px 15px;
     overflow-x: hidden;
 
     &::-webkit-scrollbar {
@@ -51,7 +51,6 @@
         border-radius: 5px;
       }
     }
-
   }
 }
 
@@ -63,7 +62,7 @@
   color: white;
   padding: 4px;
   border-radius: 5px;
-  font-size: .9em;
+  font-size: 0.9em;
   left: 3rem;
   display: flex;
   flex-direction: column;

@@ -6,6 +6,13 @@ import packageJson from "./package.json";
 export default defineConfig({
   publicDir: false,
   plugins: [react()],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: "modern-compiler",
+      },
+    },
+  },
   build: {
     lib: {
       entry: "./src/index.js",

@@ -1,5 +1,5 @@
+@use "../styles/variables" as *;
 @import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
-@import "../styles/variables";
 
 .text-white {
   color: white;
@@ -50,7 +50,9 @@ svg {
 
   .files-container {
     display: flex;
-    height: calc(100% - 46px); // Toolbar total height = baseHeight: 35px, padding top + bottom: 10px, border: 1px.
+    height: calc(
+      100% - 46px
+    ); // Toolbar total height = baseHeight: 35px, padding top + bottom: 10px, border: 1px.
 
     .navigation-pane {
       z-index: 1;
