@@ -7,7 +7,7 @@
   flex-wrap: wrap;
   column-gap: 0.5em;
   row-gap: 5px;
-  height: calc(100% - (35px + 16px));
+  height: calc(100% - 32px);
   @include overflow-y-scroll;
   padding: 8px;
   padding-right: 4px;
@@ -89,7 +89,7 @@
     }
 
     .rename-file-container.list-layout {
-      top: 6px;
+      top: 0;
       left: 58px;
       text-align: left;
 
@@ -98,7 +98,7 @@
         text-align: left;
         border-radius: 3px;
         border: none;
-        top: 5px;
+        top: 4px;
         white-space: nowrap;
         overflow-x: hidden;
         max-width: calc(100% - 62px);
@@ -111,7 +111,9 @@
     }
 
     .file-name {
+      font-size: 14px;
       max-width: 115px;
+      text-align: center;
     }
   }
 
@@ -200,7 +202,7 @@
     }
 
     .selection-checkbox {
-      top: 12px;
+      top: 6px;
     }
 
     .file-name {

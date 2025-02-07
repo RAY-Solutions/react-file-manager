@@ -12,7 +12,7 @@ import { useFileNavigation } from "../../contexts/FileNavigationContext";
 import { duplicateNameHandler } from "../../utils/duplicateNameHandler";
 import { validateApiCallback } from "../../utils/validateApiCallback";
 
-const useFileList = (onRefresh, enableFilePreview, triggerAction) => {
+const useFileList = (onRefresh, enableFilePreview, triggerAction, disableMultipleSelection) => {
   const [selectedFileIndexes, setSelectedFileIndexes] = useState([]);
   const [visible, setVisible] = useState(false);
   const [isSelectionCtx, setIsSelectionCtx] = useState(false);

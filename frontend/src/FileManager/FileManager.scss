@@ -76,6 +76,10 @@ svg {
       .sidebar-dragging {
         border-right: 1px solid #1e3a8a;
       }
+
+      @media (max-width: 768px) {
+        display: none;
+      }
     }
 
     .folders-preview {
@@ -84,12 +88,16 @@ svg {
       padding-right: 0px;
       padding-left: 0px;
       border-bottom-right-radius: 8px;
+
+      @media (max-width: 768px) {
+        width: 100% !important;
+      }
     }
   }
 }
 
 .file-explorer * {
-  box-sizing: content-box !important;
+  box-sizing: border-box;
 }
 
 .close-icon {

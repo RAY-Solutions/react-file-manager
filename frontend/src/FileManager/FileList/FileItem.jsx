@@ -5,6 +5,7 @@ import CreateFolderAction from "../Actions/CreateFolder/CreateFolder.action";
 import RenameAction from "../Actions/Rename/Rename.action";
 import { getDataSize } from "../../utils/getDataSize";
 import { formatDate } from "../../utils/formatDate";
+import { ellipsisInMiddle } from "../../utils/ellipsisInMiddle";
 import { useFileNavigation } from "../../contexts/FileNavigationContext";
 import { useSelection } from "../../contexts/SelectionContext";
 import { useClipBoard } from "../../contexts/ClipboardContext";
@@ -25,6 +26,7 @@ const FileItem = ({
   triggerAction,
   handleContextMenu,
   setLastSelectedFile,
+  disableMultipleSelection,
 }) => {
   const [fileSelected, setFileSelected] = useState(false);
   const [lastClickTime, setLastClickTime] = useState(0);
@@ -231,7 +233,7 @@ const FileItem = ({
             )}
           </div>
         ) : (
-          <span className="text-truncate file-name">{file.name}</span>
+          <span className="file-name">{ellipsisInMiddle(file.name)}</span>
         )}
       </div>
 

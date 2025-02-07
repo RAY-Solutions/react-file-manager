@@ -8,6 +8,7 @@
 
   .folder-collapsible {
     margin-left: 10px;
+    width: max-content;
   }
 
   .sb-folders-list-item {
@@ -39,6 +40,7 @@
       }
 
       .sb-folder-name {
+        font-size: 14px;
         width: max-content;
       }
     }
@@ -56,6 +58,7 @@
   .active-list-item {
     background-color: var(--file-manager-primary-color);
     color: white;
+    width: max-content;
 
     &:hover {
       cursor: pointer;

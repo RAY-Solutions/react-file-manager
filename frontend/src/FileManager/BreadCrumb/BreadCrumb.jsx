@@ -85,7 +85,7 @@ const BreadCrumb = () => {
               ref={(el) => (foldersRef.current[index] = el)}
             >
               {index === 0 ? <MdHome /> : <MdOutlineNavigateNext />}
-              {folder.name}
+              <span className="text-truncate">{folder.name}</span>
             </span>
             {hiddenFolders?.length > 0 && index === 0 && (
               <button

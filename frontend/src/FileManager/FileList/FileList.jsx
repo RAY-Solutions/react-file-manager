@@ -8,7 +8,15 @@ import useFileList from "./useFileList";
 import FilesHeader from "./FilesHeader";
 import "./FileList.scss";
 
-const FileList = ({ onCreateFolder, onRename, onFileOpen, onRefresh, enableFilePreview, triggerAction }) => {
+const FileList = ({
+  onCreateFolder,
+  onRename,
+  onFileOpen,
+  onRefresh,
+  enableFilePreview,
+  triggerAction,
+  disableMultipleSelection,
+}) => {
   const { currentPathFiles } = useFileNavigation();
   const filesViewRef = useRef(null);
   const { activeLayout } = useLayout();
@@ -24,7 +32,7 @@ const FileList = ({ onCreateFolder, onRename, onFileOpen, onRefresh, enableFileP
     selectedFileIndexes,
     clickPosition,
     isSelectionCtx,
-  } = useFileList(onRefresh, enableFilePreview, triggerAction);
+  } = useFileList(onRefresh, enableFilePreview, triggerAction, disableMultipleSelection);
 
   const contextMenuRef = useDetectOutsideClick(() => setVisible(false));
 
@@ -54,6 +62,7 @@ const FileList = ({ onCreateFolder, onRename, onFileOpen, onRefresh, enableFileP
               handleContextMenu={handleContextMenu}
               setVisible={setVisible}
               setLastSelectedFile={setLastSelectedFile}
+              disableMultipleSelection={disableMultipleSelection}
             />
           ))}
         </>
