@@ -10,28 +10,69 @@
   .file-action-container {
     display: flex;
     justify-content: space-between;
+    position: relative;
 
-    > div {
-      display: flex;
+    // Button that triggers the dropdown on mobile
+    .dropdown-toggle {
+      display: none;
+      background: var(--file-manager-primary-color);
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 4px;
     }
 
-    .file-action {
-      background-color: transparent;
-      gap: 5px;
+    // The dropdown menu
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #fff;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      padding: 10px;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
 
-      &:hover:not(:disabled) {
+      .item-action {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
         cursor: pointer;
-        background-color: rgb(0, 0, 0, 0.55) !important;
-        border-radius: 3px;
-        color: white;
-        text-shadow: 0px 0px 1px white;
-      }
+        border: none;
+        background: none;
+        width: 100%;
 
-      &:hover:disabled {
-        cursor: default;
-        background-color: transparent !important;
-        color: #b0b0b0;
-        text-shadow: none;
+        &:hover {
+          background: #f0f0f0;
+        }
+      }
+    }
+
+    // Actions shown on desktop
+    .file-actions {
+      display: flex;
+
+      .file-action {
+        background-color: transparent;
+        gap: 5px;
+        &:hover:not(:disabled) {
+          cursor: pointer;
+          background-color: rgb(0, 0, 0, 0.55) !important;
+          border-radius: 3px;
+          color: white;
+          text-shadow: 0px 0px 1px white;
+        }
+        &:hover:disabled {
+          cursor: default;
+          background-color: transparent !important;
+          color: #b0b0b0;
+          text-shadow: none;
+        }
       }
     }
   }
@@ -58,7 +99,6 @@
       margin: 0;
       border: 1px solid #c4c4c4;
       border-radius: 5px;
-
       ul {
         list-style: none;
         padding-left: 0;
@@ -66,18 +106,15 @@
         display: flex;
         flex-direction: column;
         gap: 1px;
-
         li {
           display: flex;
           align-items: center;
           gap: 8px;
           padding: 5px 20px 5px 10px;
-
           &:hover {
-            cursor: pointer;
             background-color: rgba(0, 0, 0, 0.075);
+            cursor: pointer;
           }
-
           span:nth-child(1) {
             width: 13px;
           }
@@ -101,7 +138,6 @@
       background-color: rgb(0 0 0 / 12%) !important;
       border-radius: 3px;
     }
-
     .toggle-view-icon {
       background-color: transparent;
       border: none;
@@ -133,6 +169,42 @@
   }
 }
 
+// Selected item styling
 .file-selected {
   background-color: $item-hover-color;
+  .item-action {
+    background-color: transparent;
+    &:hover:not(:disabled) {
+      cursor: pointer;
+      background-color: rgb(0, 0, 0, 0.55) !important;
+      border-radius: 3px;
+      color: white;
+      text-shadow: 0px 0px 1px white;
+    }
+  }
+}
+
+// Mobile-only vs desktop
+@media (max-width: 768px) {
+  .file-action-container {
+    // Show dropdown toggle, hide separate file actions
+    .dropdown-toggle {
+      display: block !important;
+    }
+    .file-actions {
+      display: none !important;
+    }
+  }
+}
+
+@media (min-width: 769px) {
+  .file-action-container {
+    // Hide dropdown toggle, show separate file actions
+    .dropdown-toggle {
+      display: none !important;
+    }
+    .file-actions {
+      display: flex !important;
+    }
+  }
 }

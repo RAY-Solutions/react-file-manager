@@ -10,20 +10,23 @@ import { useSelection } from "../../contexts/SelectionContext";
 import { useClipBoard } from "../../contexts/ClipboardContext";
 import { useLayout } from "../../contexts/LayoutContext";
 import { validateApiCallback } from "../../utils/validateApiCallback";
+import { useDetectOutsideClick } from "../../hooks/useDetectOutsideClick";
 import "./Toolbar.scss";
 
 const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutChange, onRefresh, triggerAction }) => {
   const [showToggleViewMenu, setShowToggleViewMenu] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const { currentFolder } = useFileNavigation();
   const { selectedFiles, setSelectedFiles, handleDownload } = useSelection();
   const { clipBoard, setClipBoard, handleCutCopy, handlePasting } = useClipBoard();
   const { activeLayout } = useLayout();
+  const dropdownRef = useDetectOutsideClick(() => setShowDropdown(false));
 
-  // Toolbar Items
   const toolbarLeftItems = [
     {
       icon: <BsFolderPlus size={17} strokeWidth={0.3} />,
-      text: "New folder",
+      title: "New Folder",
+      text: "New",
       permission: allowCreateFolder,
       onClick: () => triggerAction.show("createFolder"),
     },
@@ -66,12 +69,59 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
     setSelectedFiles([]);
   };
 
-  // Selected File/Folder Actions
   if (selectedFiles.length > 0) {
     return (
       <div className="toolbar file-selected">
         <div className="file-action-container">
-          <div>
+          {/*
+            Dropdown toggle - visible on mobile, hidden on desktop 
+          */}
+          <button className="dropdown-toggle" onClick={() => setShowDropdown((prev) => !prev)}>
+            Actions
+          </button>
+
+          {/*
+            Dropdown - visible only if showDropdown === true on mobile
+          */}
+          {showDropdown && (
+            <div className="dropdown-menu" ref={dropdownRef.ref}>
+              <button className="item-action" onClick={() => handleCutCopy(true)}>
+                <BsScissors size={18} />
+                <span>Cut</span>
+              </button>
+              <button className="item-action" onClick={() => handleCutCopy(false)}>
+                <BsCopy strokeWidth={0.1} size={17} />
+                <span>Copy</span>
+              </button>
+              {clipBoard?.files?.length > 0 && (
+                <button className="item-action" onClick={handleFilePasting}>
+                  <FaRegPaste size={18} />
+                  <span>Paste</span>
+                </button>
+              )}
+              {selectedFiles.length === 1 && (
+                <button className="item-action" onClick={() => triggerAction.show("rename")}>
+                  <BiRename size={19} />
+                  <span>Rename</span>
+                </button>
+              )}
+              {!selectedFiles.isDirectory && (
+                <button className="item-action" onClick={handleDownloadItems}>
+                  <MdOutlineFileDownload size={19} />
+                  <span>Download</span>
+                </button>
+              )}
+              <button className="item-action" onClick={() => triggerAction.show("delete")}>
+                <MdOutlineDelete size={19} />
+                <span>Delete</span>
+              </button>
+            </div>
+          )}
+
+          {/*
+            File actions - hidden on mobile, shown on desktop
+          */}
+          <div className="file-actions">
             <button className="item-action file-action" onClick={() => handleCutCopy(true)}>
               <BsScissors size={18} />
               <span>Cut</span>
@@ -81,11 +131,7 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
               <span>Copy</span>
             </button>
             {clipBoard?.files?.length > 0 && (
-              <button
-                className="item-action file-action"
-                onClick={handleFilePasting}
-                // disabled={!clipBoard}
-              >
+              <button className="item-action file-action" onClick={handleFilePasting}>
                 <FaRegPaste size={18} />
                 <span>Paste</span>
               </button>
@@ -107,7 +153,15 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
               <span>Delete</span>
             </button>
           </div>
-          <button className="item-action file-action" title="Clear selection" onClick={() => setSelectedFiles([])}>
+
+          <button
+            className="item-action file-action"
+            title="Clear selection"
+            onClick={() => {
+              setSelectedFiles([]);
+              setShowDropdown(false);
+            }}
+          >
             <span>
               {selectedFiles.length} item{selectedFiles.length > 1 && "s"} selected
             </span>
@@ -117,7 +171,6 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
       </div>
     );
   }
-  //
 
   return (
     <div className="toolbar">
@@ -126,9 +179,9 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
           {toolbarLeftItems
             .filter((item) => item.permission)
             .map((item, index) => (
-              <button className="item-action" key={index} onClick={item.onClick}>
+              <button className="item-action" key={index} onClick={item.onClick} title={item.title || item.text}>
                 {item.icon}
-                <span>{item.text}</span>
+                {Boolean(item.text) && <span>{item.text}</span>}
               </button>
             ))}
         </div>
@@ -141,7 +194,6 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
               {index !== toolbarRightItems.length - 1 && <div className="item-separator"></div>}
             </div>
           ))}
-
           {showToggleViewMenu && (
             <LayoutToggler setShowToggleViewMenu={setShowToggleViewMenu} onLayoutChange={onLayoutChange} />
           )}
