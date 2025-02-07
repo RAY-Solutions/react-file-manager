@@ -55,7 +55,14 @@ const FileItem = ({
     }
   };
 
-  const handleFileRangeSelection = (shiftKey, ctrlKey) => {
+  const handleFileRangeSelection = (shiftKey, ctrlKey, metaKey) => {
+    const isCtrlOrCmdPressed = ctrlKey || metaKey;
+
+    if (disableMultipleSelection) {
+      setSelectedFiles((prev) => (prev.includes(file) ? [] : [file]));
+      return;
+    }
+
     if (selectedFileIndexes.length > 0 && shiftKey) {
       let reverseSelection = false;
       let startRange = selectedFileIndexes[0];
@@ -71,8 +78,9 @@ const FileItem = ({
 
       const filesRange = currentPathFiles.slice(startRange, endRange + 1);
       setSelectedFiles(reverseSelection ? filesRange.reverse() : filesRange);
-    } else if (selectedFileIndexes.length > 0 && ctrlKey) {
-      // Remove file from selected files if it already exists on CTRL + Click, other push it in selectedFiles
+    } else if (selectedFileIndexes.length > 0 && isCtrlOrCmdPressed) {
+      console.log("CTRL/CMD + Click");
+      // Remove file from selected files if it already exists on CTRL/CMD + Click, other push it in selectedFiles
       setSelectedFiles((prev) => {
         const filteredFiles = prev.filter((f) => f.path !== file.path);
         if (prev.length === filteredFiles.length) {
@@ -89,7 +97,7 @@ const FileItem = ({
     e.stopPropagation();
     if (file.isEditing) return;
 
-    handleFileRangeSelection(e.shiftKey, e.ctrlKey);
+    handleFileRangeSelection(e.shiftKey, e.ctrlKey, e.metaKey);
 
     const currentTime = new Date().getTime();
     if (currentTime - lastClickTime < 300) {
@@ -131,6 +139,12 @@ const FileItem = ({
   };
 
   const handleCheckboxChange = (e) => {
+    if (disableMultipleSelection) {
+      setSelectedFiles((prev) => (prev.includes(file) ? [] : [file]));
+      setFileSelected(e.target.checked);
+      return;
+    }
+
     if (e.target.checked) {
       setSelectedFiles((prev) => [...prev, file]);
     } else {
@@ -139,7 +153,6 @@ const FileItem = ({
 
     setFileSelected(e.target.checked);
   };
-  //
 
   const handleDragStart = (e) => {
     e.dataTransfer.setDragImage(dragIconRef.current, 30, 50);

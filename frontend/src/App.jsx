@@ -27,6 +27,30 @@ function App() {
       updatedAt: "2024-09-09T11:00:00Z",
     },
     {
+      name: "Pictures2",
+      isDirectory: true,
+      path: "/Pictures2", // Located in Root directory as well
+      updatedAt: "2024-09-09T11:00:00Z",
+    },
+    {
+      name: "Pictures1",
+      isDirectory: true,
+      path: "/Pictures/Pictures1", // Located in Root directory as well
+      updatedAt: "2024-09-09T11:00:00Z",
+    },
+    {
+      name: "Pictures2",
+      isDirectory: true,
+      path: "/Pictures/Pictures1/Pictures2", // Located in Root directory as well
+      updatedAt: "2024-09-09T11:00:00Z",
+    },
+    {
+      name: "Pictures3",
+      isDirectory: true,
+      path: "/Pictures/Pictures1/Pictures2/Pictures3", // Located in Root directory as well
+      updatedAt: "2024-09-09T11:00:00Z",
+    },
+    {
       name: "Pic.png",
       isDirectory: false, // File
       path: "/Pictures/Pic.png", // Located inside the "Pictures" folder

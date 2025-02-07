@@ -43,6 +43,7 @@ const FileManager = ({
   filePreviewComponent,
   primaryColor = "#6155b4",
   fontFamily = "Nunito Sans, sans-serif",
+  disableMultipleSelection = false,
 }) => {
   const triggerAction = useTriggerAction();
   const { containerRef, colSizes, isDragging, handleMouseMove, handleMouseUp, handleMouseDown } = useColumnResize(
@@ -94,6 +95,7 @@ const FileManager = ({
                       onRefresh={onRefresh}
                       enableFilePreview={enableFilePreview}
                       triggerAction={triggerAction}
+                      disableMultipleSelection={disableMultipleSelection}
                     />
                   </div>
                 </section>
@@ -109,6 +111,7 @@ const FileManager = ({
                   filePreviewComponent={filePreviewComponent}
                   acceptedFileTypes={acceptedFileTypes}
                   triggerAction={triggerAction}
+                  disableMultipleSelection={disableMultipleSelection}
                 />
               </LayoutProvider>
             </ClipBoardProvider>
@@ -160,6 +163,7 @@ FileManager.propTypes = {
   filePreviewComponent: PropTypes.func,
   primaryColor: PropTypes.string,
   fontFamily: PropTypes.string,
+  disableMultipleSelection: PropTypes.bool,
 };
 
 export default FileManager;

@@ -3,7 +3,7 @@ import Checkbox from "../../components/Checkbox/Checkbox";
 import { useSelection } from "../../contexts/SelectionContext";
 import { useFileNavigation } from "../../contexts/FileNavigationContext";
 
-const FilesHeader = ({ unselectFiles }) => {
+const FilesHeader = ({ unselectFiles, disableMultipleSelection }) => {
   const [showSelectAll, setShowSelectAll] = useState(false);
 
   const { selectedFiles, setSelectedFiles } = useSelection();
@@ -29,7 +29,7 @@ const FilesHeader = ({ unselectFiles }) => {
       onMouseLeave={() => setShowSelectAll(false)}
     >
       <div className="file-select-all">
-        {(showSelectAll || allFilesSelected) && (
+        {(showSelectAll || allFilesSelected) && !disableMultipleSelection && (
           <Checkbox
             checked={allFilesSelected}
             onChange={handleSelectAll}

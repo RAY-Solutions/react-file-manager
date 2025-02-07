@@ -78,7 +78,9 @@ const useFileList = (onRefresh, enableFilePreview, triggerAction, disableMultipl
   };
 
   const handleselectAllFiles = () => {
-    setSelectedFiles(currentPathFiles);
+    if (!disableMultipleSelection) {
+      setSelectedFiles(currentPathFiles);
+    }
     setVisible(false);
   };
 
@@ -123,12 +125,13 @@ const useFileList = (onRefresh, enableFilePreview, triggerAction, disableMultipl
       title: "Upload",
       icon: <MdOutlineFileUpload size={18} />,
       onClick: handleUpload,
-      divider: true,
+      divider: !disableMultipleSelection,
     },
     {
       title: "Select all",
       icon: <BiSelectMultiple size={18} />,
       onClick: handleselectAllFiles,
+      hidden: disableMultipleSelection,
     },
   ];
 

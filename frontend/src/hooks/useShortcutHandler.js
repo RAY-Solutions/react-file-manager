@@ -6,7 +6,7 @@ import { useSelection } from "../contexts/SelectionContext";
 import { useLayout } from "../contexts/LayoutContext";
 import { validateApiCallback } from "../utils/validateApiCallback";
 
-export const useShortcutHandler = (triggerAction, onRefresh) => {
+export const useShortcutHandler = (triggerAction, onRefresh, disableMultipleSelection) => {
   const { setClipBoard, handleCutCopy, handlePasting } = useClipBoard();
   const { currentFolder, currentPathFiles } = useFileNavigation();
   const { setSelectedFiles, handleDownload } = useSelection();
@@ -57,7 +57,9 @@ export const useShortcutHandler = (triggerAction, onRefresh) => {
   };
 
   const triggerSelectAll = () => {
-    setSelectedFiles(currentPathFiles);
+    if (!disableMultipleSelection) {
+      setSelectedFiles(currentPathFiles);
+    }
   };
 
   const triggerClearSelection = () => {
@@ -76,7 +78,7 @@ export const useShortcutHandler = (triggerAction, onRefresh) => {
     setActiveLayout("list-layout");
   };
 
-  // Keypress detection will be disbaled when some Action is in active state.
+  // Keypress detection will be disabled when some Action is in active state.
   useKeyPress(shortcuts.createFolder, triggerCreateFolder, triggerAction.isActive);
   useKeyPress(shortcuts.uploadFiles, triggerUploadFiles, triggerAction.isActive);
   useKeyPress(shortcuts.cut, triggerCutItems, triggerAction.isActive);
