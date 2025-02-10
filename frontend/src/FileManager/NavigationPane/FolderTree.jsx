@@ -10,6 +10,7 @@ const FolderTree = ({ folder, onFileOpen }) => {
   const { currentPath, setCurrentPath } = useFileNavigation();
 
   const handleFolderSwitch = () => {
+    if (folder.path === currentPath) return;
     onFileOpen(folder);
     setIsActive(true);
     setCurrentPath(folder.path);

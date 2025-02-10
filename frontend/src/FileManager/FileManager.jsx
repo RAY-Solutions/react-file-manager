@@ -88,7 +88,7 @@ const FileManager = ({
                   </div>
 
                   <div className="folders-preview" style={{ width: colSizes.col2 + "%" }}>
-                    <BreadCrumb />
+                    <BreadCrumb onFileOpen={onFileOpen} />
                     <FileList
                       onCreateFolder={onCreateFolder}
                       onRename={onRename}

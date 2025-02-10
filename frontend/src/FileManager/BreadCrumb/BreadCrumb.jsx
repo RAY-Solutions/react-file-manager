@@ -4,7 +4,7 @@ import { useFileNavigation } from "../../contexts/FileNavigationContext";
 import { useDetectOutsideClick } from "../../hooks/useDetectOutsideClick";
 import "./BreadCrumb.scss";
 
-const BreadCrumb = () => {
+const BreadCrumb = ({ onFileOpen }) => {
   const [folders, setFolders] = useState([]);
   const [hiddenFolders, setHiddenFolders] = useState([]);
   const [hiddenFoldersWidth, setHiddenFoldersWidth] = useState([]);
@@ -32,8 +32,10 @@ const BreadCrumb = () => {
     setHiddenFoldersWidth([]);
   }, [currentPath]);
 
-  const switchPath = (path) => {
-    setCurrentPath(path);
+  const switchFolder = (folder) => {
+    if (folder.path === currentPath) return;
+    onFileOpen(folder);
+    setCurrentPath(folder.path);
   };
 
   const getBreadCrumbWidth = () => {
@@ -81,7 +83,7 @@ const BreadCrumb = () => {
           <div key={index} style={{ display: "contents" }}>
             <span
               className="folder-name"
-              onClick={() => switchPath(folder.path)}
+              onClick={() => switchFolder(folder)}
               ref={(el) => (foldersRef.current[index] = el)}
             >
               {index === 0 ? <MdHome /> : <MdOutlineNavigateNext />}
@@ -107,7 +109,7 @@ const BreadCrumb = () => {
             <li
               key={index}
               onClick={() => {
-                switchPath(folder.path);
+                switchFolder(folder);
                 setShowHiddenFolders(false);
               }}
             >
