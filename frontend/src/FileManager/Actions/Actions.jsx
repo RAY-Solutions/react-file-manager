@@ -37,17 +37,17 @@ const Actions = ({
           onFileUploaded={onFileUploaded}
         />
       ),
-      width: "35%",
+      width: "28rem",
     },
     delete: {
       title: "Delete",
       component: <DeleteAction triggerAction={triggerAction} onDelete={onDelete} />,
-      width: "25%",
+      width: "28rem",
     },
     previewFile: {
       title: "Preview",
       component: <PreviewFileAction filePreviewPath={filePreviewPath} filePreviewComponent={filePreviewComponent} />,
-      width: "50%",
+      width: "42rem",
     },
   };
 
