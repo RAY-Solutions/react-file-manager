@@ -80,7 +80,7 @@ const FileItem = ({
       setSelectedFiles(reverseSelection ? filesRange.reverse() : filesRange);
     } else if (selectedFileIndexes.length > 0 && isCtrlOrCmdPressed) {
       console.log("CTRL/CMD + Click");
-      // Remove file from selected files if it already exists on CTRL/CMD + Click, other push it in selectedFiles
+      // Remove file from selected files if it already exists on CTRL/CMD + Click, otherwise push it in selectedFiles
       setSelectedFiles((prev) => {
         const filteredFiles = prev.filter((f) => f.path !== file.path);
         if (prev.length === filteredFiles.length) {

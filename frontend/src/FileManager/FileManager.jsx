@@ -31,6 +31,7 @@ const FileManager = ({
   onLayoutChange = () => {},
   onRefresh,
   onFileOpen = () => {},
+  onSelect,
   onError = () => {},
   layout = "grid-layout",
   enableFilePreview = true,
@@ -62,7 +63,7 @@ const FileManager = ({
       <Loader loading={isLoading} />
       <FilesProvider filesData={files} onError={onError}>
         <FileNavigationProvider initialPath={initialPath}>
-          <SelectionProvider onDownload={onDownload}>
+          <SelectionProvider onDownload={onDownload} onSelect={onSelect}>
             <ClipBoardProvider onPaste={onPaste} onCut={onCut} onCopy={onCopy}>
               <LayoutProvider layout={layout}>
                 <Toolbar
@@ -151,6 +152,7 @@ FileManager.propTypes = {
   onLayoutChange: PropTypes.func,
   onRefresh: PropTypes.func,
   onFileOpen: PropTypes.func,
+  onSelect: PropTypes.func,
   onError: PropTypes.func,
   layout: PropTypes.oneOf(["grid-layout", "list-layout"]),
   maxFileSize: PropTypes.number,
