@@ -150,13 +150,7 @@ const RenameAction = ({ filesViewRef, file, onRename, triggerAction }) => {
         <ErrorTooltip message={renameErrorMessage} xPlacement={errorXPlacement} yPlacement={errorYPlacement} />
       )}
 
-      <Modal
-        heading={"Rename"}
-        show={renameFileWarning}
-        setShow={setRenameFileWarning}
-        dialogWidth={"25vw"}
-        closeButton={false}
-      >
+      <Modal heading={"Rename"} show={renameFileWarning} setShow={setRenameFileWarning} closeButton={false}>
         <div className="fm-rename-folder-container" ref={warningModalRef}>
           <div className="fm-rename-folder-input">
             <div className="fm-rename-warning">

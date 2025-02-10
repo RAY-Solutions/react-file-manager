@@ -7,7 +7,7 @@ const Modal = ({
   show,
   setShow,
   heading,
-  dialogWidth = "25%",
+  dialogWidth = "28rem",
   contentClassName = "",
   closeButton = true,
 }) => {
