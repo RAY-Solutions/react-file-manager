@@ -77,6 +77,51 @@
     }
   }
 
+  .toolbar-left-container {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+
+    .dropdown-toggle {
+      display: none;
+      background: var(--file-manager-primary-color);
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #fff;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      padding: 10px;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+
+      .item-action {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+
+        &:hover {
+          background: #f0f0f0;
+        }
+      }
+    }
+  }
+
   .fm-toolbar {
     display: flex;
     justify-content: space-between;
@@ -195,6 +240,15 @@
       display: none !important;
     }
   }
+
+  .toolbar-left-container {
+    .dropdown-toggle {
+      display: block !important;
+    }
+    .toolbar-left-items {
+      display: none !important;
+    }
+  }
 }
 
 @media (min-width: 769px) {
@@ -204,6 +258,15 @@
       display: none !important;
     }
     .file-actions {
+      display: flex !important;
+    }
+  }
+
+  .toolbar-left-container {
+    .dropdown-toggle {
+      display: none !important;
+    }
+    .toolbar-left-items {
       display: flex !important;
     }
   }

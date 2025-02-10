@@ -21,6 +21,8 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
   const { clipBoard, setClipBoard, handleCutCopy, handlePasting } = useClipBoard();
   const { activeLayout } = useLayout();
   const dropdownRef = useDetectOutsideClick(() => setShowDropdown(false));
+  const [showLeftDropdown, setShowLeftDropdown] = useState(false);
+  const leftDropdownRef = useDetectOutsideClick(() => setShowLeftDropdown(false));
 
   const toolbarLeftItems = [
     {
@@ -28,13 +30,19 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
       title: "New Folder",
       text: "New",
       permission: allowCreateFolder,
-      onClick: () => triggerAction.show("createFolder"),
+      onClick: () => {
+        setShowLeftDropdown(false);
+        triggerAction.show("createFolder");
+      },
     },
     {
       icon: <MdOutlineFileUpload size={18} />,
       text: "Upload",
       permission: allowUploadFile,
-      onClick: () => triggerAction.show("uploadFile"),
+      onClick: () => {
+        setShowLeftDropdown(false);
+        triggerAction.show("uploadFile");
+      },
     },
     {
       icon: <FaRegPaste size={18} />,
@@ -61,10 +69,13 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
   ];
 
   function handleFilePasting() {
+    setShowLeftDropdown(false);
+    setShowDropdown(false);
     handlePasting(currentFolder);
   }
 
   const handleDownloadItems = () => {
+    setShowDropdown(false);
     handleDownload();
     setSelectedFiles([]);
   };
@@ -85,11 +96,23 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
           */}
           {showDropdown && (
             <div className="dropdown-menu" ref={dropdownRef.ref}>
-              <button className="item-action" onClick={() => handleCutCopy(true)}>
+              <button
+                className="item-action"
+                onClick={() => {
+                  setShowDropdown(false);
+                  handleCutCopy(true);
+                }}
+              >
                 <BsScissors size={18} />
                 <span>Cut</span>
               </button>
-              <button className="item-action" onClick={() => handleCutCopy(false)}>
+              <button
+                className="item-action"
+                onClick={() => {
+                  setShowDropdown(false);
+                  handleCutCopy(false);
+                }}
+              >
                 <BsCopy strokeWidth={0.1} size={17} />
                 <span>Copy</span>
               </button>
@@ -100,7 +123,13 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
                 </button>
               )}
               {selectedFiles.length === 1 && (
-                <button className="item-action" onClick={() => triggerAction.show("rename")}>
+                <button
+                  className="item-action"
+                  onClick={() => {
+                    setShowDropdown(false);
+                    triggerAction.show("rename");
+                  }}
+                >
                   <BiRename size={19} />
                   <span>Rename</span>
                 </button>
@@ -111,7 +140,13 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
                   <span>Download</span>
                 </button>
               )}
-              <button className="item-action" onClick={() => triggerAction.show("delete")}>
+              <button
+                className="item-action"
+                onClick={() => {
+                  setShowDropdown(false);
+                  triggerAction.show("delete");
+                }}
+              >
                 <MdOutlineDelete size={19} />
                 <span>Delete</span>
               </button>
@@ -175,15 +210,32 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
   return (
     <div className="toolbar">
       <div className="fm-toolbar">
-        <div>
-          {toolbarLeftItems
-            .filter((item) => item.permission)
-            .map((item, index) => (
-              <button className="item-action" key={index} onClick={item.onClick} title={item.title || item.text}>
-                {item.icon}
-                {Boolean(item.text) && <span>{item.text}</span>}
-              </button>
-            ))}
+        <div className="toolbar-left-container">
+          <button className="dropdown-toggle" onClick={() => setShowLeftDropdown((prev) => !prev)}>
+            Actions
+          </button>
+          {showLeftDropdown && (
+            <div className="dropdown-menu" ref={leftDropdownRef.ref}>
+              {toolbarLeftItems
+                .filter((item) => item.permission)
+                .map((item, index) => (
+                  <button className="item-action" key={index} onClick={item.onClick} title={item.title || item.text}>
+                    {item.icon}
+                    {Boolean(item.text) && <span>{item.text}</span>}
+                  </button>
+                ))}
+            </div>
+          )}
+          <div className="toolbar-left-items">
+            {toolbarLeftItems
+              .filter((item) => item.permission)
+              .map((item, index) => (
+                <button className="item-action" key={index} onClick={item.onClick} title={item.title || item.text}>
+                  {item.icon}
+                  {Boolean(item.text) && <span>{item.text}</span>}
+                </button>
+              ))}
+          </div>
         </div>
         <div>
           {toolbarRightItems.map((item, index) => (
