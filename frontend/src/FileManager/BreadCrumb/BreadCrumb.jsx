@@ -57,12 +57,8 @@ const BreadCrumb = ({ onFileOpen }) => {
     return availableSpace - (remainingFoldersWidth + moreBtnWidth);
   };
 
-  const isBreadCrumbOverflowing = () => {
-    return breadCrumbRef.current.scrollWidth > breadCrumbRef.current.clientWidth;
-  };
-
-  useEffect(() => {
-    if (isBreadCrumbOverflowing()) {
+  const handleResize = () => {
+    if (breadCrumbRef.current.scrollWidth > breadCrumbRef.current.clientWidth) {
       const hiddenFolder = folders[1];
       const hiddenFolderWidth = foldersRef.current[1]?.clientWidth;
       setHiddenFoldersWidth((prev) => [...prev, hiddenFolderWidth]);
@@ -74,7 +70,16 @@ const BreadCrumb = ({ onFileOpen }) => {
       setHiddenFolders((prev) => prev.slice(0, -1));
       setHiddenFoldersWidth((prev) => prev.slice(0, -1));
     }
-  }, [isBreadCrumbOverflowing]);
+  };
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(breadCrumbRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [folders, hiddenFolders, hiddenFoldersWidth]);
 
   return (
     <div className="bread-crumb-container">
