@@ -5,6 +5,10 @@
   display: flex;
   gap: 18px;
 
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+
   .select-files {
     width: 100%;
 
@@ -56,6 +60,10 @@
 
   .files-progress {
     width: 60%;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
 
     .heading {
       display: flex;

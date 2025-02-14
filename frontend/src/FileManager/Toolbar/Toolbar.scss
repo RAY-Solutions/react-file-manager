@@ -1,9 +1,6 @@
 @use "../../styles/variables" as *;
 
 .toolbar {
-  height: 47px;
-  min-height: 47px;
-  max-height: 47px;
   border-bottom: 1px solid $border-color;
   padding: 5px 10px;
 

@@ -30,6 +30,8 @@ svg {
 }
 
 .file-explorer {
+  display: flex;
+  flex-direction: column;
   min-height: 400px;
   height: 100%;
   width: 100%;
@@ -50,8 +52,8 @@ svg {
 
   .files-container {
     display: flex;
-    height: calc(100% - 46px); // Toolbar total height = baseHeight: 35px, padding top + bottom: 10px, border: 1px.
-
+    flex-grow: 1;
+    overflow-y: auto;
     .navigation-pane {
       z-index: 1;
       padding-top: 8px;
@@ -130,11 +132,5 @@ svg {
     gap: 8px;
     justify-content: flex-end;
     padding: 8px 8px 0 0;
-  }
-}
-
-.file-selcted {
-  .select-files {
-    width: 40%;
   }
 }
