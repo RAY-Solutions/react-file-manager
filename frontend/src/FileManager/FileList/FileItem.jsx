@@ -204,9 +204,7 @@ const FileItem = ({
 
   return (
     <div
-      className={`file-item-container ${dropZoneClass} ${
-        fileSelected || !!file.isEditing ? "file-selected" : ""
-      } ${isFileMoving ? "file-moving" : ""}`}
+      className={`file-item-container ${dropZoneClass} ${isFileMoving ? "file-moving" : ""}`}
       tabIndex={0}
       title={file.name}
       onClick={handleFileSelection}
@@ -222,7 +220,7 @@ const FileItem = ({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <div className="file-item">
+      <div className={`file-item ${fileSelected || !!file.isEditing ? "file-selected" : ""}`}>
         {!file.isEditing && (
           <Checkbox
             name={file.name}
