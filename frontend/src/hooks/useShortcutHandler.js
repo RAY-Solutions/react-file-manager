@@ -45,7 +45,6 @@ export const useShortcutHandler = (triggerAction, onRefresh, disableMultipleSele
   };
 
   const triggerRename = () => {
-    console.log("currentPathFiles", currentPathFiles);
     if (isActionAllowed(selectedFiles, Permission.WRITE)) {
       triggerAction.show("rename");
     }
