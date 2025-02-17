@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback, useRef as UseRef } from "react";
+import { useGesture } from "@use-gesture/react";
 import { FaRegFile, FaRegFolderOpen } from "react-icons/fa6";
 import { useFileIcons } from "../../hooks/useFileIcons";
 import CreateFolderAction from "../Actions/CreateFolder/CreateFolder.action";
@@ -34,6 +35,9 @@ const FileItem = ({
   const [checkboxClassName, setCheckboxClassName] = useState("hidden");
   const [dropZoneClass, setDropZoneClass] = useState("");
   const [tooltipPosition, setTooltipPosition] = useState(null);
+  // For manual long-press logic if desired
+  const LONG_PRESS_THRESHOLD = 500;
+  const longPressTimer = useRef(null);
 
   const { activeLayout } = useLayout();
   const iconSize = activeLayout === "grid-layout" ? 48 : 20;
@@ -47,68 +51,123 @@ const FileItem = ({
 
   const isFileMoving = clipBoard?.isMoving && clipBoard.files.find((f) => f.name === file.name && f.path === file.path);
 
-  const handleFileAccess = () => {
-    if (isActionAllowed(selectedFiles, Permission.READ)) {
-      onFileOpen(file);
-      if (file.isDirectory) {
-        setCurrentPath(file.path);
-        setSelectedFiles([]);
-      } else {
-        enableFilePreview && triggerAction.show("previewFile");
-      }
-    }
-  };
-
-  const handleFileRangeSelection = (shiftKey, ctrlKey, metaKey) => {
-    const isCtrlOrCmdPressed = ctrlKey || metaKey;
-
-    if (disableMultipleSelection) {
-      setSelectedFiles((prev) => (prev.includes(file) ? [] : [file]));
-      return;
-    }
-
-    if (selectedFileIndexes.length > 0 && shiftKey) {
-      let reverseSelection = false;
-      let startRange = selectedFileIndexes[0];
-      let endRange = index;
-
-      // Reverse Selection
-      if (startRange >= endRange) {
-        const temp = startRange;
-        startRange = endRange;
-        endRange = temp;
-        reverseSelection = true;
-      }
-
-      const filesRange = currentPathFiles.slice(startRange, endRange + 1);
-      setSelectedFiles(reverseSelection ? filesRange.reverse() : filesRange);
-    } else if (selectedFileIndexes.length > 0 && isCtrlOrCmdPressed) {
-      // Remove file from selected files if it already exists on CTRL/CMD + Click, otherwise push it in selectedFiles
-      setSelectedFiles((prev) => {
-        const filteredFiles = prev.filter((f) => f.path !== file.path);
-        if (prev.length === filteredFiles.length) {
-          return [...prev, file];
-        }
-        return filteredFiles;
-      });
+  /**
+   * Opens file or navigates into a folder.
+   */
+  const handleFileAccess = useCallback(() => {
+    if (!isActionAllowed(selectedFiles, Permission.READ)) return;
+    onFileOpen(file);
+    if (file.isDirectory) {
+      setCurrentPath(file.path);
+      setSelectedFiles([]);
     } else {
-      setSelectedFiles([file]);
+      enableFilePreview && triggerAction.show("previewFile");
     }
-  };
+  }, [
+    file,
+    isActionAllowed,
+    selectedFiles,
+    onFileOpen,
+    enableFilePreview,
+    triggerAction,
+    setCurrentPath,
+    setSelectedFiles,
+  ]);
 
-  const handleFileSelection = (e) => {
-    e.stopPropagation();
-    if (file.isEditing) return;
+  const handleFileRangeSelection = useCallback(
+    (shiftKey, ctrlKey, metaKey) => {
+      const isCtrlOrCmdPressed = ctrlKey || metaKey;
 
-    handleFileRangeSelection(e.shiftKey, e.ctrlKey, e.metaKey);
+      if (disableMultipleSelection) {
+        setSelectedFiles((prev) => (prev.includes(file) ? [] : [file]));
+        return;
+      }
 
-    const currentTime = new Date().getTime();
-    if (currentTime - lastClickTime < 300) {
-      handleFileAccess();
-      return;
-    }
-    setLastClickTime(currentTime);
-  };
+      if (selectedFileIndexes.length > 0 && shiftKey) {
+        let reverseSelection = false;
+        let startRange = selectedFileIndexes[0];
+        let endRange = index;
+        if (startRange >= endRange) {
+          const temp = startRange;
+          startRange = endRange;
+          endRange = temp;
+          reverseSelection = true;
+        }
+        const filesRange = currentPathFiles.slice(startRange, endRange + 1);
+        setSelectedFiles(reverseSelection ? filesRange.reverse() : filesRange);
+      } else if (selectedFileIndexes.length > 0 && isCtrlOrCmdPressed) {
+        setSelectedFiles((prev) => {
+          const filteredFiles = prev.filter((f) => f.path !== file.path);
+          if (prev.length === filteredFiles.length) {
+            return [...prev, file];
+          }
+          return filteredFiles;
+        });
+      } else {
+        setSelectedFiles([file]);
+      }
+    },
+    [disableMultipleSelection, file, selectedFileIndexes, index, currentPathFiles, setSelectedFiles],
+  );
+
+  const bind = useGesture(
+    {
+      onPointerDown: ({ event, down }) => {
+        longPressTimer.current = setTimeout(() => {
+          if (!file.isEditing) {
+            setSelectedFiles((prev) => {
+              if (!prev.includes(file)) {
+                return [...prev, file];
+              }
+              return prev;
+            });
+          }
+        }, LONG_PRESS_THRESHOLD);
+      },
+      onPointerMove: ({ event, offset, first, dragging, tap }) => {
+        // If user moves the pointer, we cancel the long-press.
+        if (longPressTimer.current && dragging) {
+          clearTimeout(longPressTimer.current);
+          longPressTimer.current = null;
+        }
+      },
+      onPointerUp: ({ event, tap }) => {
+        // Clear the long press timer.
+        if (longPressTimer.current) {
+          clearTimeout(longPressTimer.current);
+          longPressTimer.current = null;
+        }
+      },
+      onClick: ({ event, shiftKey, ctrlKey, metaKey }) => {
+        event.stopPropagation();
+        if (file.isEditing) return;
+        handleFileRangeSelection(shiftKey, ctrlKey, metaKey);
+        // Double-click logic
+        const currentTime = Date.now();
+        if (currentTime - lastClickTime < 300) {
+          handleFileAccess();
+        } else {
+          setLastClickTime(currentTime);
+        }
+      },
+      onContextMenu: ({ event }) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (file.isEditing) return;
+        if (!fileSelected) {
+          setSelectedFiles([file]);
+        }
+        setLastSelectedFile(file);
+        handleContextMenu(event, true);
+      },
+    },
+    {
+      drag: {
+        threshold: 5,
+      },
+      eventOptions: { passive: false },
+    },
+  );
 
   const handleOnKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -116,45 +175,6 @@ const FileItem = ({
       setSelectedFiles([file]);
       handleFileAccess();
     }
-  };
-
-  const handleItemContextMenu = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-
-    if (file.isEditing) return;
-
-    if (!fileSelected) {
-      setSelectedFiles([file]);
-    }
-
-    setLastSelectedFile(file);
-    handleContextMenu(e, true);
-  };
-
-  // Selection Checkbox Functions
-  const handleMouseOver = () => {
-    setCheckboxClassName("visible");
-  };
-
-  const handleMouseLeave = () => {
-    !fileSelected && setCheckboxClassName("hidden");
-  };
-
-  const handleCheckboxChange = (e) => {
-    if (disableMultipleSelection) {
-      setSelectedFiles((prev) => (prev.includes(file) ? [] : [file]));
-      setFileSelected(e.target.checked);
-      return;
-    }
-
-    if (e.target.checked) {
-      setSelectedFiles((prev) => [...prev, file]);
-    } else {
-      setSelectedFiles((prev) => prev.filter((f) => f.name !== file.name && f.path !== file.path));
-    }
-
-    setFileSelected(e.target.checked);
   };
 
   const handleDragStart = (e) => {
@@ -166,7 +186,6 @@ const FileItem = ({
   };
 
   const handleDragEnd = () => setClipBoard(null);
-
   const handleDragEnterOver = (e) => {
     e.preventDefault();
     if (fileSelected || !file.isDirectory) {
@@ -179,7 +198,6 @@ const FileItem = ({
   };
 
   const handleDragLeave = (e) => {
-    // To stay in dragging state for the child elements of the target drop-zone
     if (!e.currentTarget.contains(e.relatedTarget)) {
       setDropZoneClass((prev) => (prev ? "" : prev));
       setTooltipPosition(null);
@@ -189,7 +207,6 @@ const FileItem = ({
   const handleDrop = (e) => {
     e.preventDefault();
     if (fileSelected || !file.isDirectory) return;
-
     if (isActionAllowed(selectedFiles, Permission.WRITE)) {
       handlePasting(file);
     }
@@ -197,19 +214,41 @@ const FileItem = ({
     setTooltipPosition(null);
   };
 
+  // Show/hide checkbox on hover.
+  const handleMouseOver = () => {
+    setCheckboxClassName("visible");
+  };
+  const handleMouseLeave = () => {
+    if (!fileSelected) setCheckboxClassName("hidden");
+  };
+
+  const handleCheckboxChange = (e) => {
+    if (disableMultipleSelection) {
+      setSelectedFiles((prev) => (prev.includes(file) ? [] : [file]));
+      setFileSelected(e.target.checked);
+      return;
+    }
+    if (e.target.checked) {
+      setSelectedFiles((prev) => [...prev, file]);
+    } else {
+      setSelectedFiles((prev) => prev.filter((f) => f.path !== file.path));
+    }
+    setFileSelected(e.target.checked);
+  };
+
   useEffect(() => {
     setFileSelected(selectedFileIndexes.includes(index));
     setCheckboxClassName(selectedFileIndexes.includes(index) ? "visible" : "hidden");
-  }, [selectedFileIndexes]);
+  }, [selectedFileIndexes, index]);
 
   return (
     <div
+      {...bind()}
       className={`file-item-container ${dropZoneClass} ${isFileMoving ? "file-moving" : ""}`}
+      style={{ touchAction: "none" }}
       tabIndex={0}
       title={file.name}
-      onClick={handleFileSelection}
       onKeyDown={handleOnKeyDown}
-      onContextMenu={handleItemContextMenu}
       onMouseOver={handleMouseOver}
       onMouseLeave={handleMouseLeave}
       draggable={fileSelected}
@@ -232,9 +271,11 @@ const FileItem = ({
           />
         )}
         {file.isDirectory ? (
-          <FaRegFolderOpen size={iconSize} />
+          <FaRegFolderOpen style={{ minWidth: iconSize, minHeight: iconSize, width: iconSize, height: iconSize }} />
         ) : (
-          <>{fileIcons[file.name?.split(".").pop()?.toLowerCase()] ?? <FaRegFile size={iconSize} />}</>
+          (fileIcons[file.name?.split(".").pop()?.toLowerCase()] ?? (
+            <FaRegFile style={{ minWidth: iconSize, minHeight: iconSize, width: iconSize, height: iconSize }} />
+          ))
         )}
 
         {file.isEditing ? (
@@ -268,13 +309,7 @@ const FileItem = ({
 
       {/* Drag Icon & Tooltip Setup */}
       {tooltipPosition && (
-        <div
-          style={{
-            top: `${tooltipPosition.y}px`,
-            left: `${tooltipPosition.x}px`,
-          }}
-          className="drag-move-tooltip"
-        >
+        <div style={{ top: `${tooltipPosition.y}px`, left: `${tooltipPosition.x}px` }} className="drag-move-tooltip">
           Move to <span className="drop-zone-file-name">{file.name}</span>
         </div>
       )}
@@ -286,7 +321,6 @@ const FileItem = ({
           <>{dragIcons[file.name?.split(".").pop()?.toLowerCase()] ?? <FaRegFile size={dragIconSize} />}</>
         )}
       </div>
-      {/* Drag Icon & Tooltip Setup */}
     </div>
   );
 };

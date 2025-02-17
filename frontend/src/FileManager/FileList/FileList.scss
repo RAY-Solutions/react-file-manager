@@ -118,11 +118,11 @@
   }
 
   .file-selected {
-    background-color: var(--file-manager-primary-color);
-    color: white;
+    background-color: var(--file-manager-primary-color) !important;
+    color: white !important;
 
     &:hover {
-      background-color: var(--file-manager-primary-color);
+      background-color: var(--file-manager-primary-color) !important;
     }
   }
 
@@ -149,6 +149,7 @@
     top: 0;
     background-color: #f5f5f5;
     z-index: 1;
+    margin-bottom: 3px;
 
     .file-select-all {
       width: 5%;
@@ -176,6 +177,7 @@
     width: 100%;
     margin: 0;
     border-radius: 0;
+    padding-left: 3px;
 
     &:hover {
       background-color: rgb(0, 0, 0, 0.04);
