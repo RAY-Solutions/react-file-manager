@@ -11,6 +11,7 @@ import { useSelection } from "../../contexts/SelectionContext";
 import { useClipBoard } from "../../contexts/ClipboardContext";
 import { useLayout } from "../../contexts/LayoutContext";
 import Checkbox from "../../components/Checkbox/Checkbox";
+import { usePermissions, Permission } from "../../contexts/PermissionsContext";
 
 const dragIconSize = 50;
 
@@ -38,20 +39,23 @@ const FileItem = ({
   const iconSize = activeLayout === "grid-layout" ? 48 : 20;
   const fileIcons = useFileIcons(iconSize);
   const { setCurrentPath, currentPathFiles } = useFileNavigation();
-  const { setSelectedFiles } = useSelection();
+  const { setSelectedFiles, selectedFiles } = useSelection();
   const { clipBoard, handleCutCopy, setClipBoard, handlePasting } = useClipBoard();
   const dragIconRef = useRef(null);
   const dragIcons = useFileIcons(dragIconSize);
+  const { isActionAllowed } = usePermissions();
 
   const isFileMoving = clipBoard?.isMoving && clipBoard.files.find((f) => f.name === file.name && f.path === file.path);
 
   const handleFileAccess = () => {
-    onFileOpen(file);
-    if (file.isDirectory) {
-      setCurrentPath(file.path);
-      setSelectedFiles([]);
-    } else {
-      enableFilePreview && triggerAction.show("previewFile");
+    if (isActionAllowed(selectedFiles, Permission.READ)) {
+      onFileOpen(file);
+      if (file.isDirectory) {
+        setCurrentPath(file.path);
+        setSelectedFiles([]);
+      } else {
+        enableFilePreview && triggerAction.show("previewFile");
+      }
     }
   };
 
@@ -157,7 +161,9 @@ const FileItem = ({
   const handleDragStart = (e) => {
     e.dataTransfer.setDragImage(dragIconRef.current, 30, 50);
     e.dataTransfer.effectAllowed = "copy";
-    handleCutCopy(true);
+    if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+      handleCutCopy(true);
+    }
   };
 
   const handleDragEnd = () => setClipBoard(null);
@@ -185,7 +191,9 @@ const FileItem = ({
     e.preventDefault();
     if (fileSelected || !file.isDirectory) return;
 
-    handlePasting(file);
+    if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+      handlePasting(file);
+    }
     setDropZoneClass((prev) => (prev ? "" : prev));
     setTooltipPosition(null);
   };
@@ -246,7 +254,11 @@ const FileItem = ({
             )}
           </div>
         ) : (
-          <span className="file-name">{ellipsisInMiddle(file.name)}</span>
+          <div className={activeLayout === "list-layout" ? "text-truncate" : "file-name"}>
+            <span title={file.name} className="file-name">
+              {ellipsisInMiddle(file.name)}
+            </span>
+          </div>
         )}
       </div>
 

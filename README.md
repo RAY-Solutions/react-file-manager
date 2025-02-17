@@ -27,6 +27,7 @@ An open-source React.js package for easy integration of a file manager into appl
   intuitive keyboard shortcuts.
 - **Drag-and-Drop**: Move selected files and folders by dragging them to the desired directory,
   making file organization effortless.
+- **Access Control & Permissions**: Define granular file and folder permissions including read, write, delete, copy, and upload restrictions.
 
 ![React File Manager](https://github.com/user-attachments/assets/e68f750b-86bf-450d-b27e-fd3dedebf1bd)
 
@@ -129,6 +130,7 @@ type File = {
 | `primaryColor`         | string                                                                                                                         | The primary color for the component's theme. Accepts any valid CSS color format (e.g., `'blue'`, `'#E97451'`, `'rgb(52, 152, 219)'`). This color will be applied to buttons, highlights, and other key elements. `default: #6155b4`.                                                                                                                                                    |
 | `width`                | string \| number                                                                                                               | The width of the component `default: 100%`. Can be a string (e.g., `'100%'`, `'10rem'`) or a number (in pixels).                                                                                                                                                                                                                                                                        |
 | `disableMultipleSelection` | boolean                                                                                                                     | A boolean flag indicating whether to disable multiple file selection. If set to `true`, only one file can be selected at a time. `default: false`.                                                                                                                                                                                                                                      |
+| `permissions`          | Array<[Permission](#-permission-object-structure)>                                                                             | An array of permission objects that define access control rules for files and directories. Use this prop to restrict or allow specific actions like read, write, delete, copy, and upload.                                                                                                                                                                                               |
 
 ## ⌨️ Keyboard Shortcuts
 
@@ -151,6 +153,71 @@ type File = {
 | Jump to Last File in the List  | `End`              |
 | Refresh File List              | `F5`               |
 | Clear Selection                | `Esc`              |
+
+## 🔒 Access Control & Permissions
+The **`permissions`** prop allows you to define **access control rules** for files and directories.
+
+### **1️⃣ Permission Object Structure**
+```typescript
+type Permission = {
+  path: string;
+  copy?: boolean;
+  read?: boolean;
+  write?: boolean;
+  delete?: boolean;
+  upload?: boolean;
+  applyTo?: "file" | "folder";
+};
+```
+📌 Important Notes:
+- If a permission is not set, it defaults to `true` (allowed).
+- The `path` property is a string representing the file or folder path.
+- If `applyTo` is not provided, the rule applies to both files and folders.
+- If `applyTo: "file"`, the rule applies only to files within the given path.
+- If `applyTo: "folder"`, the rule applies only to folders within the given path.
+
+### **2️⃣ Permissions Table**
+| **Permission**   | **Files?** | **Folders?** | **Description** |
+|------------------|-----------|-------------|-----------------|
+| **`copy`**      | ✅ Yes     | ✅ Yes      | Allows copying the file or folder to another location. |
+| **`read`**      | ✅ Yes     | ✅ Yes      | Allows opening/viewing or downloading(files only) the file or folder. |
+| **`write`**     | ✅ Yes     | ✅ Yes      | Allows renaming the file or folder. |
+| **`delete`**    | ✅ Yes     | ✅ Yes      | Allows deleting the file or folder. |
+| **`upload`**    | ❌ No      | ✅ Yes      | Allows uploading new files to a folder (not applicable to individual files). |
+
+### **3️⃣ How Permissions Apply**
+Permissions can be applied to:
+1. **A Specific File** → Example: `"/Pictures/Profile.jpg"`
+2. **A Specific Folder (Only the Folder Itself)** → Example: `"/Documents"`
+3. **A Folder’s Immediate Children (One Level Only)** → Example: `"/Documents/*"`
+4. **All Folder Contents (Recursive, All Levels)** → Example: `"/Documents/**"`
+5. **Global Permissions (Entire File System)** → Example: `"/**"`
+
+📌 **When `applyTo` is used**, only the specified type (**file or folder**) will be affected.
+
+### **4️⃣ Understanding Path Patterns**
+| **Path Pattern**          | **Applies To** | **Immediate Only?** | **Recursive (All Levels)?** | **applyTo Default** |
+|--------------------------|---------------|---------------------|---------------------------|---------------------|
+| `/Documents`             | The folder itself (not its contents) | ✅ | ❌ | Files & Folders |
+| `/Documents/*`           | Folder & **immediate children only** | ✅ | ❌ | Files & Folders |
+| `/Documents/**`          | Folder & **all contents recursively** | ❌ | ✅ | Files & Folders |
+| `/Pictures/Profile.jpg`  | A specific file | ✅ | ❌ | Files Only |
+| `/**`                    | The entire file system | ❌ | ✅ | Files & Folders |
+
+### **5️⃣ Example Usage in FileManager**
+```jsx
+<FileManager
+  files={files}
+  permissions={[
+    { path: "/Documents", read: true, write: false },
+    { path: "/Documents/*", read: true, write: true, applyTo: "file" },
+    { path: "/Documents/**", read: true, write: false, applyTo: "folder" },
+    { path: "/Pictures/Profile.jpg", read: true, delete: false },
+    { path: "/Uploads", upload: true, applyTo: "folder" },
+    { path: "/**", read: true, write: true, delete: true },
+  ]}
+/>
+```
 
 ## Custom File Preview
 

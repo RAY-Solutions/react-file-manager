@@ -12,6 +12,7 @@ import { useLayout } from "../../contexts/LayoutContext";
 import { validateApiCallback } from "../../utils/validateApiCallback";
 import { useDetectOutsideClick } from "../../hooks/useDetectOutsideClick";
 import "./Toolbar.scss";
+import { Permission, usePermissions } from "../../contexts/PermissionsContext";
 
 const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutChange, onRefresh, triggerAction }) => {
   const [showToggleViewMenu, setShowToggleViewMenu] = useState(false);
@@ -23,6 +24,7 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
   const dropdownRef = useDetectOutsideClick(() => setShowDropdown(false));
   const [showLeftDropdown, setShowLeftDropdown] = useState(false);
   const leftDropdownRef = useDetectOutsideClick(() => setShowLeftDropdown(false));
+  const { isActionAllowed } = usePermissions();
 
   const toolbarLeftItems = [
     {
@@ -32,7 +34,9 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
       permission: allowCreateFolder,
       onClick: () => {
         setShowLeftDropdown(false);
-        triggerAction.show("createFolder");
+        if (isActionAllowed([currentFolder], Permission.WRITE)) {
+          triggerAction.show("createFolder");
+        }
       },
     },
     {
@@ -41,7 +45,9 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
       permission: allowUploadFile,
       onClick: () => {
         setShowLeftDropdown(false);
-        triggerAction.show("uploadFile");
+        if (isActionAllowed([currentFolder], Permission.UPLOAD)) {
+          triggerAction.show("uploadFile");
+        }
       },
     },
     {
@@ -71,13 +77,17 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
   function handleFilePasting() {
     setShowLeftDropdown(false);
     setShowDropdown(false);
-    handlePasting(currentFolder);
+    if (isActionAllowed([currentFolder], Permission.WRITE)) {
+      handlePasting(currentFolder);
+    }
   }
 
   const handleDownloadItems = () => {
     setShowDropdown(false);
-    handleDownload();
-    setSelectedFiles([]);
+    if (isActionAllowed(selectedFiles, Permission.READ)) {
+      handleDownload();
+      setSelectedFiles([]);
+    }
   };
 
   if (selectedFiles.length > 0) {
@@ -100,7 +110,9 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
                 className="item-action"
                 onClick={() => {
                   setShowDropdown(false);
-                  handleCutCopy(true);
+                  if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+                    handleCutCopy(true);
+                  }
                 }}
               >
                 <BsScissors size={18} />
@@ -110,7 +122,9 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
                 className="item-action"
                 onClick={() => {
                   setShowDropdown(false);
-                  handleCutCopy(false);
+                  if (isActionAllowed(selectedFiles, Permission.COPY)) {
+                    handleCutCopy(false);
+                  }
                 }}
               >
                 <BsCopy strokeWidth={0.1} size={17} />
@@ -127,14 +141,16 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
                   className="item-action"
                   onClick={() => {
                     setShowDropdown(false);
-                    triggerAction.show("rename");
+                    if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+                      triggerAction.show("rename");
+                    }
                   }}
                 >
                   <BiRename size={19} />
                   <span>Rename</span>
                 </button>
               )}
-              {!selectedFiles.isDirectory && (
+              {selectedFiles?.find((file) => !file.isDirectory) && (
                 <button className="item-action" onClick={handleDownloadItems}>
                   <MdOutlineFileDownload size={19} />
                   <span>Download</span>
@@ -144,7 +160,9 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
                 className="item-action"
                 onClick={() => {
                   setShowDropdown(false);
-                  triggerAction.show("delete");
+                  if (isActionAllowed(selectedFiles, Permission.DELETE)) {
+                    triggerAction.show("delete");
+                  }
                 }}
               >
                 <MdOutlineDelete size={19} />
@@ -157,11 +175,25 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
             File actions - hidden on mobile, shown on desktop
           */}
           <div className="file-actions">
-            <button className="item-action file-action" onClick={() => handleCutCopy(true)}>
+            <button
+              className="item-action file-action"
+              onClick={() => {
+                if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+                  handleCutCopy(true);
+                }
+              }}
+            >
               <BsScissors size={18} />
               <span>Cut</span>
             </button>
-            <button className="item-action file-action" onClick={() => handleCutCopy(false)}>
+            <button
+              className="item-action file-action"
+              onClick={() => {
+                if (isActionAllowed(selectedFiles, Permission.COPY)) {
+                  handleCutCopy(false);
+                }
+              }}
+            >
               <BsCopy strokeWidth={0.1} size={17} />
               <span>Copy</span>
             </button>
@@ -172,18 +204,32 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
               </button>
             )}
             {selectedFiles.length === 1 && (
-              <button className="item-action file-action" onClick={() => triggerAction.show("rename")}>
+              <button
+                className="item-action file-action"
+                onClick={() => {
+                  if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+                    triggerAction.show("rename");
+                  }
+                }}
+              >
                 <BiRename size={19} />
                 <span>Rename</span>
               </button>
             )}
-            {!selectedFiles.isDirectory && (
+            {selectedFiles?.find((file) => !file.isDirectory) && (
               <button className="item-action file-action" onClick={handleDownloadItems}>
                 <MdOutlineFileDownload size={19} />
                 <span>Download</span>
               </button>
             )}
-            <button className="item-action file-action" onClick={() => triggerAction.show("delete")}>
+            <button
+              className="item-action file-action"
+              onClick={() => {
+                if (isActionAllowed(selectedFiles, Permission.DELETE)) {
+                  triggerAction.show("delete");
+                }
+              }}
+            >
               <MdOutlineDelete size={19} />
               <span>Delete</span>
             </button>

@@ -11,8 +11,9 @@ import { useLayout } from "../../contexts/LayoutContext";
 import { useFileNavigation } from "../../contexts/FileNavigationContext";
 import { duplicateNameHandler } from "../../utils/duplicateNameHandler";
 import { validateApiCallback } from "../../utils/validateApiCallback";
+import { Permission, usePermissions } from "../../contexts/PermissionsContext";
 
-const useFileList = (onRefresh, enableFilePreview, triggerAction, disableMultipleSelection) => {
+const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, disableMultipleSelection) => {
   const [selectedFileIndexes, setSelectedFileIndexes] = useState([]);
   const [visible, setVisible] = useState(false);
   const [isSelectionCtx, setIsSelectionCtx] = useState(false);
@@ -21,15 +22,19 @@ const useFileList = (onRefresh, enableFilePreview, triggerAction, disableMultipl
 
   const { clipBoard, setClipBoard, handleCutCopy, handlePasting } = useClipBoard();
   const { selectedFiles, setSelectedFiles, handleDownload } = useSelection();
-  const { currentPath, setCurrentPath, currentPathFiles, setCurrentPathFiles } = useFileNavigation();
+  const { isActionAllowed } = usePermissions();
+  const { currentPath, currentFolder, setCurrentPath, currentPathFiles, setCurrentPathFiles } = useFileNavigation();
   const { activeLayout, setActiveLayout } = useLayout();
 
   // Context Menu
   const handleFileOpen = () => {
     if (lastSelectedFile.isDirectory) {
-      setCurrentPath(lastSelectedFile.path);
-      setSelectedFileIndexes([]);
-      setSelectedFiles([]);
+      if (isActionAllowed([lastSelectedFile], Permission.READ)) {
+        setCurrentPath(lastSelectedFile.path);
+        setSelectedFileIndexes([]);
+        setSelectedFiles([]);
+        onFileOpen(lastSelectedFile);
+      }
     } else {
       enableFilePreview && triggerAction.show("previewFile");
     }
@@ -37,28 +42,38 @@ const useFileList = (onRefresh, enableFilePreview, triggerAction, disableMultipl
   };
 
   const handleMoveOrCopyItems = (isMoving) => {
-    handleCutCopy(isMoving);
+    if (isActionAllowed(selectedFiles, isMoving ? Permission.WRITE : Permission.COPY)) {
+      handleCutCopy(isMoving);
+    }
     setVisible(false);
   };
 
   const handleFilePasting = () => {
-    handlePasting(lastSelectedFile);
+    if (isActionAllowed([lastSelectedFile], Permission.WRITE)) {
+      handlePasting(lastSelectedFile);
+    }
     setVisible(false);
   };
 
   const handleRenaming = () => {
+    if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+      triggerAction.show("rename");
+    }
     setVisible(false);
-    triggerAction.show("rename");
   };
 
   const handleDownloadItems = () => {
-    handleDownload();
+    if (isActionAllowed(selectedFiles, Permission.READ)) {
+      handleDownload();
+    }
     setVisible(false);
   };
 
   const handleDelete = () => {
+    if (isActionAllowed(selectedFiles, Permission.DELETE)) {
+      triggerAction.show("delete");
+    }
     setVisible(false);
-    triggerAction.show("delete");
   };
 
   const handleRefresh = () => {
@@ -68,13 +83,17 @@ const useFileList = (onRefresh, enableFilePreview, triggerAction, disableMultipl
   };
 
   const handleCreateNewFolder = () => {
-    triggerAction.show("createFolder");
+    if (isActionAllowed([currentFolder], Permission.WRITE)) {
+      triggerAction.show("createFolder");
+    }
     setVisible(false);
   };
 
   const handleUpload = () => {
+    if (isActionAllowed([currentFolder], Permission.UPLOAD)) {
+      triggerAction.show("uploadFile");
+    }
     setVisible(false);
-    triggerAction.show("uploadFile");
   };
 
   const handleselectAllFiles = () => {

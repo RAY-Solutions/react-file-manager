@@ -5,43 +5,62 @@ import { useFileNavigation } from "../contexts/FileNavigationContext";
 import { useSelection } from "../contexts/SelectionContext";
 import { useLayout } from "../contexts/LayoutContext";
 import { validateApiCallback } from "../utils/validateApiCallback";
+import { usePermissions, Permission } from "../contexts/PermissionsContext";
 
 export const useShortcutHandler = (triggerAction, onRefresh, disableMultipleSelection) => {
   const { setClipBoard, handleCutCopy, handlePasting } = useClipBoard();
   const { currentFolder, currentPathFiles } = useFileNavigation();
-  const { setSelectedFiles, handleDownload } = useSelection();
+  const { setSelectedFiles, selectedFiles, handleDownload } = useSelection();
   const { setActiveLayout } = useLayout();
+  const { isActionAllowed } = usePermissions();
 
   const triggerCreateFolder = () => {
-    triggerAction.show("createFolder");
+    if (isActionAllowed([currentFolder], Permission.WRITE)) {
+      triggerAction.show("createFolder");
+    }
   };
 
   const triggerUploadFiles = () => {
-    triggerAction.show("uploadFile");
+    if (isActionAllowed([currentFolder], Permission.UPLOAD)) {
+      triggerAction.show("uploadFile");
+    }
   };
 
   const triggerCutItems = () => {
-    handleCutCopy(true);
+    if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+      handleCutCopy(true);
+    }
   };
 
   const triggerCopyItems = () => {
-    handleCutCopy(false);
+    if (isActionAllowed(selectedFiles, Permission.COPY)) {
+      handleCutCopy(false);
+    }
   };
 
   const triggerPasteItems = () => {
-    handlePasting(currentFolder);
+    if (isActionAllowed([currentFolder], Permission.WRITE)) {
+      handlePasting(currentFolder);
+    }
   };
 
   const triggerRename = () => {
-    triggerAction.show("rename");
+    console.log("currentPathFiles", currentPathFiles);
+    if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+      triggerAction.show("rename");
+    }
   };
 
   const triggerDownload = () => {
-    handleDownload();
+    if (isActionAllowed(selectedFiles, Permission.READ)) {
+      handleDownload();
+    }
   };
 
   const triggerDelete = () => {
-    triggerAction.show("delete");
+    if (isActionAllowed(selectedFiles, Permission.DELETE)) {
+      triggerAction.show("delete");
+    }
   };
 
   const triggerSelectFirst = () => {

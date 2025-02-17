@@ -9,6 +9,7 @@ import { FileNavigationProvider } from "../contexts/FileNavigationContext";
 import { SelectionProvider } from "../contexts/SelectionContext";
 import { ClipBoardProvider } from "../contexts/ClipboardContext";
 import { LayoutProvider } from "../contexts/LayoutContext";
+import { PermissionsProvider } from "../contexts/PermissionsContext";
 import { useTriggerAction } from "../hooks/useTriggerAction";
 import { useColumnResize } from "../hooks/useColumnResize";
 import PropTypes from "prop-types";
@@ -45,6 +46,7 @@ const FileManager = ({
   primaryColor = "#6155b4",
   fontFamily = "Nunito Sans, sans-serif",
   disableMultipleSelection = false,
+  permissions = [],
 }) => {
   const triggerAction = useTriggerAction();
   const { containerRef, colSizes, isDragging, handleMouseMove, handleMouseUp, handleMouseDown } = useColumnResize(
@@ -66,54 +68,56 @@ const FileManager = ({
           <SelectionProvider onDownload={onDownload} onSelect={onSelect}>
             <ClipBoardProvider onPaste={onPaste} onCut={onCut} onCopy={onCopy}>
               <LayoutProvider layout={layout}>
-                <Toolbar
-                  allowCreateFolder
-                  allowUploadFile
-                  onLayoutChange={onLayoutChange}
-                  onRefresh={onRefresh}
-                  triggerAction={triggerAction}
-                />
-                <section
-                  ref={containerRef}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={handleMouseUp}
-                  className="files-container"
-                >
-                  <div className="navigation-pane" style={{ width: colSizes.col1 + "%" }}>
-                    <NavigationPane onFileOpen={onFileOpen} />
-                    <div
-                      className={`sidebar-resize ${isDragging ? "sidebar-dragging" : ""}`}
-                      onMouseDown={handleMouseDown}
-                    />
-                  </div>
+                <PermissionsProvider permissions={permissions}>
+                  <Toolbar
+                    allowCreateFolder
+                    allowUploadFile
+                    onLayoutChange={onLayoutChange}
+                    onRefresh={onRefresh}
+                    triggerAction={triggerAction}
+                  />
+                  <section
+                    ref={containerRef}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    className="files-container"
+                  >
+                    <div className="navigation-pane" style={{ width: colSizes.col1 + "%" }}>
+                      <NavigationPane onFileOpen={onFileOpen} />
+                      <div
+                        className={`sidebar-resize ${isDragging ? "sidebar-dragging" : ""}`}
+                        onMouseDown={handleMouseDown}
+                      />
+                    </div>
 
-                  <div className="folders-preview" style={{ width: colSizes.col2 + "%" }}>
-                    <BreadCrumb onFileOpen={onFileOpen} />
-                    <FileList
-                      onCreateFolder={onCreateFolder}
-                      onRename={onRename}
-                      onFileOpen={onFileOpen}
-                      onRefresh={onRefresh}
-                      enableFilePreview={enableFilePreview}
-                      triggerAction={triggerAction}
-                      disableMultipleSelection={disableMultipleSelection}
-                    />
-                  </div>
-                </section>
+                    <div className="folders-preview" style={{ width: colSizes.col2 + "%" }}>
+                      <BreadCrumb onFileOpen={onFileOpen} />
+                      <FileList
+                        onCreateFolder={onCreateFolder}
+                        onRename={onRename}
+                        onFileOpen={onFileOpen}
+                        onRefresh={onRefresh}
+                        enableFilePreview={enableFilePreview}
+                        triggerAction={triggerAction}
+                        disableMultipleSelection={disableMultipleSelection}
+                      />
+                    </div>
+                  </section>
 
-                <Actions
-                  fileUploadConfig={fileUploadConfig}
-                  onFileUploading={onFileUploading}
-                  onFileUploaded={onFileUploaded}
-                  onDelete={onDelete}
-                  onRefresh={onRefresh}
-                  maxFileSize={maxFileSize}
-                  filePreviewPath={filePreviewPath}
-                  filePreviewComponent={filePreviewComponent}
-                  acceptedFileTypes={acceptedFileTypes}
-                  triggerAction={triggerAction}
-                  disableMultipleSelection={disableMultipleSelection}
-                />
+                  <Actions
+                    fileUploadConfig={fileUploadConfig}
+                    onFileUploading={onFileUploading}
+                    onFileUploaded={onFileUploaded}
+                    onDelete={onDelete}
+                    onRefresh={onRefresh}
+                    maxFileSize={maxFileSize}
+                    filePreviewPath={filePreviewPath}
+                    filePreviewComponent={filePreviewComponent}
+                    acceptedFileTypes={acceptedFileTypes}
+                    triggerAction={triggerAction}
+                    disableMultipleSelection={disableMultipleSelection}
+                  />
+                </PermissionsProvider>
               </LayoutProvider>
             </ClipBoardProvider>
           </SelectionProvider>
@@ -166,6 +170,17 @@ FileManager.propTypes = {
   primaryColor: PropTypes.string,
   fontFamily: PropTypes.string,
   disableMultipleSelection: PropTypes.bool,
+  permissions: PropTypes.arrayOf(
+    PropTypes.shape({
+      path: PropTypes.string.isRequired,
+      copy: PropTypes.bool,
+      read: PropTypes.bool,
+      write: PropTypes.bool,
+      delete: PropTypes.bool,
+      upload: PropTypes.bool,
+      applyTo: PropTypes.oneOf(["file", "folder"]),
+    }),
+  ),
 };
 
 export default FileManager;

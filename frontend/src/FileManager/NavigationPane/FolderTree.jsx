@@ -3,13 +3,16 @@ import Collapse from "../../components/Collapse/Collapse";
 import { FaRegFolder, FaRegFolderOpen } from "react-icons/fa";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { useFileNavigation } from "../../contexts/FileNavigationContext";
+import { usePermissions, Permission } from "../../contexts/PermissionsContext";
 
 const FolderTree = ({ folder, onFileOpen }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const { currentPath, setCurrentPath } = useFileNavigation();
+  const { isActionAllowed } = usePermissions();
 
   const handleFolderSwitch = () => {
+    if (!isActionAllowed([folder], Permission.READ)) return;
     if (folder.path === currentPath) return;
     onFileOpen(folder);
     setIsActive(true);
@@ -17,6 +20,7 @@ const FolderTree = ({ folder, onFileOpen }) => {
   };
 
   const handleCollapseChange = (e) => {
+    if (!isActionAllowed([folder], Permission.READ)) return;
     e.stopPropagation();
     setIsOpen((prev) => !prev);
   };
