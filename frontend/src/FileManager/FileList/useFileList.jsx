@@ -78,7 +78,7 @@ const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, di
 
   const handleRefresh = () => {
     setVisible(false);
-    validateApiCallback(onRefresh, "onRefresh");
+    validateApiCallback(onRefresh, "onRefresh", currentFolder);
     setClipBoard(null);
   };
 

@@ -68,7 +68,7 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
       icon: <FiRefreshCw size={16} />,
       title: "Refresh",
       onClick: () => {
-        validateApiCallback(onRefresh, "onRefresh");
+        validateApiCallback(onRefresh, "onRefresh", currentFolder);
         setClipBoard(null);
       },
     },
