@@ -67,7 +67,7 @@ export const PermissionsProvider = ({ children, permissions }) => {
    * @param {string} permissionType - The type of permission to check (e.g., 'read', 'write').
    * @returns {boolean} - Returns true if the action is allowed on all files, otherwise false.
    */
-  const isActionAllowed = (files, permissionType) => {
+  const isActionAllowed = (files, permissionType, riseError = true) => {
     const allowed = files.every((file) => {
       const filePath = file?.path || "/";
       let permissionFound = false;
@@ -115,7 +115,7 @@ export const PermissionsProvider = ({ children, permissions }) => {
       return permissionFound ? permissionAllowed : true;
     });
 
-    if (!allowed) {
+    if (!allowed && riseError) {
       setDeniedPermission(readablePermissionNames[permissionType]);
       setDeniedFile(files.length === 1 ? files[0].name : "");
       setShow(true);

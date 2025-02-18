@@ -139,12 +139,14 @@ const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, di
       title: "New folder",
       icon: <BsFolderPlus size={18} />,
       onClick: handleCreateNewFolder,
+      className: `${isActionAllowed([currentFolder], Permission.WRITE, false) ? "" : "disable"}`,
     },
     {
       title: "Upload",
       icon: <MdOutlineFileUpload size={18} />,
       onClick: handleUpload,
       divider: !disableMultipleSelection,
+      className: `${isActionAllowed([currentFolder], Permission.UPLOAD, false) ? "" : "disable"}`,
     },
     {
       title: "Select all",
@@ -159,17 +161,20 @@ const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, di
       title: "Open",
       icon: lastSelectedFile?.isDirectory ? <PiFolderOpen size={20} /> : <FaRegFile size={16} />,
       onClick: handleFileOpen,
+      className: `${isActionAllowed([lastSelectedFile], Permission.READ, false) ? "" : "disable"}`,
       divider: true,
     },
     {
       title: "Cut",
       icon: <BsScissors size={19} />,
       onClick: () => handleMoveOrCopyItems(true),
+      className: `${isActionAllowed(selectedFiles, Permission.WRITE, false) ? "" : "disable"}`,
     },
     {
       title: "Copy",
       icon: <BsCopy strokeWidth={0.1} size={17} />,
       onClick: () => handleMoveOrCopyItems(false),
+      className: `${isActionAllowed(selectedFiles, Permission.COPY, false) ? "" : "disable"}`,
       divider: !lastSelectedFile?.isDirectory,
     },
     {
@@ -185,17 +190,20 @@ const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, di
       icon: <BiRename size={19} />,
       onClick: handleRenaming,
       hidden: selectedFiles.length > 1,
+      className: `${isActionAllowed(selectedFiles, Permission.WRITE, false) ? "" : "disable"}`,
     },
     {
       title: "Download",
       icon: <MdOutlineFileDownload size={18} />,
       onClick: handleDownloadItems,
       hidden: lastSelectedFile?.isDirectory,
+      className: `${isActionAllowed(selectedFiles, Permission.READ, false) ? "" : "disable"}`,
     },
     {
       title: "Delete",
       icon: <MdOutlineDelete size={19} />,
       onClick: handleDelete,
+      className: `${isActionAllowed(selectedFiles, Permission.DELETE, false) ? "" : "disable"}`,
     },
   ];
   //

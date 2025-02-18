@@ -46,6 +46,14 @@
           background-color: transparent;
         }
       }
+      li.disable {
+        pointer-events: none;
+        opacity: 0.5;
+        &:hover {
+          cursor: default;
+          background-color: transparent;
+        }
+      }
     }
 
     .divider {

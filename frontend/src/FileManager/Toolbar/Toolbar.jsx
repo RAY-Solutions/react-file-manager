@@ -31,7 +31,7 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
       icon: <BsFolderPlus size={17} strokeWidth={0.3} />,
       title: "New Folder",
       text: "New",
-      permission: allowCreateFolder,
+      permission: allowCreateFolder && isActionAllowed([currentFolder], Permission.WRITE, false),
       onClick: () => {
         setShowLeftDropdown(false);
         if (isActionAllowed([currentFolder], Permission.WRITE)) {
@@ -42,7 +42,7 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
     {
       icon: <MdOutlineFileUpload size={18} />,
       text: "Upload",
-      permission: allowUploadFile,
+      permission: allowUploadFile && isActionAllowed([currentFolder], Permission.UPLOAD, false),
       onClick: () => {
         setShowLeftDropdown(false);
         if (isActionAllowed([currentFolder], Permission.UPLOAD)) {
@@ -53,7 +53,7 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
     {
       icon: <FaRegPaste size={18} />,
       text: "Paste",
-      permission: !!clipBoard,
+      permission: !!clipBoard && isActionAllowed([currentFolder], Permission.WRITE, false),
       onClick: handleFilePasting,
     },
   ];
@@ -89,6 +89,65 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
       setSelectedFiles([]);
     }
   };
+  const toolbarLeftOnSelectItems = [
+    {
+      icon: <BsScissors size={18} />,
+      text: "Cut",
+      permission: isActionAllowed(selectedFiles, Permission.WRITE, false),
+      onClick: () => {
+        setShowLeftDropdown(false);
+        if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+          handleCutCopy(true);
+        }
+      },
+    },
+    {
+      icon: <BsCopy strokeWidth={0.1} size={17} />,
+      text: "Copy",
+      permission: isActionAllowed(selectedFiles, Permission.COPY, false),
+      onClick: () => {
+        setShowLeftDropdown(false);
+        if (isActionAllowed(selectedFiles, Permission.COPY)) {
+          handleCutCopy(false);
+        }
+      },
+    },
+    {
+      icon: <FaRegPaste size={18} />,
+      text: "Paste",
+      permission: !!clipBoard && isActionAllowed([currentFolder], Permission.WRITE, false),
+      onClick: handleFilePasting,
+    },
+    {
+      icon: <BiRename size={19} />,
+      text: "Rename",
+      permission: selectedFiles.length === 1 && isActionAllowed(selectedFiles, Permission.WRITE, false),
+      onClick: () => {
+        setShowLeftDropdown(false);
+        if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+          triggerAction.show("rename");
+        }
+      },
+    },
+    {
+      icon: <MdOutlineFileDownload size={19} />,
+      text: "Download",
+      permission:
+        selectedFiles?.find((file) => !file.isDirectory) && isActionAllowed(selectedFiles, Permission.READ, false),
+      onClick: handleDownloadItems,
+    },
+    {
+      icon: <MdOutlineDelete size={19} />,
+      text: "Delete",
+      permission: isActionAllowed(selectedFiles, Permission.DELETE, false),
+      onClick: () => {
+        setShowLeftDropdown(false);
+        if (isActionAllowed(selectedFiles, Permission.DELETE)) {
+          triggerAction.show("delete");
+        }
+      },
+    },
+  ];
 
   if (selectedFiles.length > 0) {
     return (
@@ -97,142 +156,47 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
           {/*
             Dropdown toggle - visible on mobile, hidden on desktop 
           */}
-          <button className="dropdown-toggle" onClick={() => setShowDropdown((prev) => !prev)}>
-            Actions
-          </button>
+          {Boolean(toolbarLeftOnSelectItems.filter((item) => item.permission).length > 0) && (
+            <button className="dropdown-toggle" onClick={() => setShowDropdown((prev) => !prev)}>
+              Actions
+            </button>
+          )}
 
           {/*
             Dropdown - visible only if showDropdown === true on mobile
           */}
           {showDropdown && (
             <div className="dropdown-menu" ref={dropdownRef.ref}>
-              <button
-                className="item-action"
-                onClick={() => {
-                  setShowDropdown(false);
-                  if (isActionAllowed(selectedFiles, Permission.WRITE)) {
-                    handleCutCopy(true);
-                  }
-                }}
-              >
-                <BsScissors size={18} />
-                <span>Cut</span>
-              </button>
-              <button
-                className="item-action"
-                onClick={() => {
-                  setShowDropdown(false);
-                  if (isActionAllowed(selectedFiles, Permission.COPY)) {
-                    handleCutCopy(false);
-                  }
-                }}
-              >
-                <BsCopy strokeWidth={0.1} size={17} />
-                <span>Copy</span>
-              </button>
-              {clipBoard?.files?.length > 0 && (
-                <button className="item-action" onClick={handleFilePasting}>
-                  <FaRegPaste size={18} />
-                  <span>Paste</span>
-                </button>
-              )}
-              {selectedFiles.length === 1 && (
-                <button
-                  className="item-action"
-                  onClick={() => {
-                    setShowDropdown(false);
-                    if (isActionAllowed(selectedFiles, Permission.WRITE)) {
-                      triggerAction.show("rename");
-                    }
-                  }}
-                >
-                  <BiRename size={19} />
-                  <span>Rename</span>
-                </button>
-              )}
-              {selectedFiles?.find((file) => !file.isDirectory) && (
-                <button className="item-action" onClick={handleDownloadItems}>
-                  <MdOutlineFileDownload size={19} />
-                  <span>Download</span>
-                </button>
-              )}
-              <button
-                className="item-action"
-                onClick={() => {
-                  setShowDropdown(false);
-                  if (isActionAllowed(selectedFiles, Permission.DELETE)) {
-                    triggerAction.show("delete");
-                  }
-                }}
-              >
-                <MdOutlineDelete size={19} />
-                <span>Delete</span>
-              </button>
+              {toolbarLeftOnSelectItems
+                .filter((item) => item.permission)
+                .map((item, index) => (
+                  <button className="item-action" key={index} onClick={item.onClick} title={item.title || item.text}>
+                    {item.icon}
+                    {Boolean(item.text) && <span>{item.text}</span>}
+                  </button>
+                ))}
             </div>
           )}
 
           {/*
             File actions - hidden on mobile, shown on desktop
           */}
-          <div className="file-actions">
-            <button
-              className="item-action file-action"
-              onClick={() => {
-                if (isActionAllowed(selectedFiles, Permission.WRITE)) {
-                  handleCutCopy(true);
-                }
-              }}
-            >
-              <BsScissors size={18} />
-              <span>Cut</span>
-            </button>
-            <button
-              className="item-action file-action"
-              onClick={() => {
-                if (isActionAllowed(selectedFiles, Permission.COPY)) {
-                  handleCutCopy(false);
-                }
-              }}
-            >
-              <BsCopy strokeWidth={0.1} size={17} />
-              <span>Copy</span>
-            </button>
-            {clipBoard?.files?.length > 0 && (
-              <button className="item-action file-action" onClick={handleFilePasting}>
-                <FaRegPaste size={18} />
-                <span>Paste</span>
-              </button>
-            )}
-            {selectedFiles.length === 1 && (
-              <button
-                className="item-action file-action"
-                onClick={() => {
-                  if (isActionAllowed(selectedFiles, Permission.WRITE)) {
-                    triggerAction.show("rename");
-                  }
-                }}
-              >
-                <BiRename size={19} />
-                <span>Rename</span>
-              </button>
-            )}
-            {selectedFiles?.find((file) => !file.isDirectory) && (
-              <button className="item-action file-action" onClick={handleDownloadItems}>
-                <MdOutlineFileDownload size={19} />
-                <span>Download</span>
-              </button>
-            )}
-            <button
-              className="item-action file-action"
-              onClick={() => {
-                if (isActionAllowed(selectedFiles, Permission.DELETE)) {
-                  triggerAction.show("delete");
-                }
-              }}
-            >
-              <MdOutlineDelete size={19} />
-              <span>Delete</span>
-            </button>
+          <div>
+            <div className="file-actions">
+              {toolbarLeftOnSelectItems
+                .filter((item) => item.permission)
+                .map((item, index) => (
+                  <button
+                    className="item-action file-action"
+                    key={index}
+                    onClick={item.onClick}
+                    title={item.title || item.text}
+                  >
+                    {item.icon}
+                    {Boolean(item.text) && <span>{item.text}</span>}
+                  </button>
+                ))}
+            </div>
           </div>
 
           <button
@@ -257,9 +221,11 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
     <div className="toolbar">
       <div className="fm-toolbar">
         <div className="toolbar-left-container">
-          <button className="dropdown-toggle" onClick={() => setShowLeftDropdown((prev) => !prev)}>
-            Actions
-          </button>
+          {Boolean(toolbarLeftItems.filter((item) => item.permission).length) && (
+            <button className="dropdown-toggle" onClick={() => setShowLeftDropdown((prev) => !prev)}>
+              Actions
+            </button>
+          )}
           {showLeftDropdown && (
             <div className="dropdown-menu" ref={leftDropdownRef.ref}>
               {toolbarLeftItems
