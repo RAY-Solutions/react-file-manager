@@ -42,6 +42,7 @@ const CreateFolderAction = ({ filesViewRef, file, onCreateFolder, triggerAction 
       e.preventDefault();
       triggerAction.close();
       setCurrentPathFiles((prev) => prev.filter((f) => f.key !== file.key));
+      return;
     }
 
     const invalidCharsRegex = /[\\/:*?"<>|]/;
