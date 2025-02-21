@@ -138,10 +138,10 @@ const FileItem = ({
           longPressTimer.current = null;
         }
       },
-      onClick: ({ event, shiftKey, ctrlKey, metaKey }) => {
+      onClick: ({ event }) => {
         event.stopPropagation();
         if (file.isEditing) return;
-        handleFileRangeSelection(shiftKey, ctrlKey, metaKey);
+        handleFileRangeSelection(event.shiftKey, event.ctrlKey, event.metaKey);
         // Double-click logic
         const currentTime = Date.now();
         if (currentTime - lastClickTime < 300) {
