@@ -79,7 +79,7 @@ const FileItem = ({
       const isCtrlOrCmdPressed = ctrlKey || metaKey;
 
       if (disableMultipleSelection) {
-        setSelectedFiles((prev) => (prev.includes(file) ? [] : [file]));
+        setSelectedFiles([file]);
         return;
       }
 
