@@ -42,6 +42,7 @@ const FileManager = ({
   height = "600px",
   width = "100%",
   initialPath = "",
+  rootFolder = "Home",
   filePreviewComponent,
   primaryColor = "#6155b4",
   fontFamily = "Nunito Sans, sans-serif",
@@ -91,7 +92,7 @@ const FileManager = ({
                     </div>
 
                     <div className="folders-preview" style={{ width: colSizes.col2 + "%" }}>
-                      <BreadCrumb onFileOpen={onFileOpen} />
+                      <BreadCrumb rootFolder={rootFolder} onFileOpen={onFileOpen} />
                       <FileList
                         onCreateFolder={onCreateFolder}
                         onRename={onRename}
@@ -181,6 +182,7 @@ FileManager.propTypes = {
       applyTo: PropTypes.oneOf(["file", "folder"]),
     }),
   ),
+  rootFolder: PropTypes.string,
 };
 
 export default FileManager;

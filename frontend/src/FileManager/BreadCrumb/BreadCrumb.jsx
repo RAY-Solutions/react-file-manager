@@ -4,7 +4,7 @@ import { useFileNavigation } from "../../contexts/FileNavigationContext";
 import { useDetectOutsideClick } from "../../hooks/useDetectOutsideClick";
 import "./BreadCrumb.scss";
 
-const BreadCrumb = ({ onFileOpen }) => {
+const BreadCrumb = ({ rootFolder, onFileOpen }) => {
   const [folders, setFolders] = useState([]);
   const [hiddenFolders, setHiddenFolders] = useState([]);
   const [hiddenFoldersWidth, setHiddenFoldersWidth] = useState([]);
@@ -23,14 +23,14 @@ const BreadCrumb = ({ onFileOpen }) => {
       let path = "";
       return currentPath?.split("/").map((item) => {
         return {
-          name: item || "Home",
+          name: item || rootFolder,
           path: item === "" ? item : (path += `/${item}`),
         };
       });
     });
     setHiddenFolders([]);
     setHiddenFoldersWidth([]);
-  }, [currentPath]);
+  }, [currentPath, rootFolder]);
 
   const switchFolder = (folder) => {
     if (folder.path === currentPath) return;
