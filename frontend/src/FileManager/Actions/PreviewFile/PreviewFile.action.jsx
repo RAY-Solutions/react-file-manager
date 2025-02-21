@@ -19,8 +19,8 @@ const PreviewFileAction = ({ filePreviewPath, filePreviewComponent }) => {
   const [hasError, setHasError] = useState(false);
   const { selectedFiles } = useSelection();
   const fileIcons = useFileIcons(73);
-  const extension = getFileExtension(selectedFiles[0].name)?.toLowerCase();
-  const filePath = `${filePreviewPath}${selectedFiles[0].path}`;
+  const extension = selectedFiles?.[0]?.name ? getFileExtension(selectedFiles[0].name)?.toLowerCase() : "";
+  const filePath = selectedFiles?.[0]?.path ? `${filePreviewPath}${selectedFiles[0].path}` : "";
 
   // Custom file preview component
   const customPreview = useMemo(() => filePreviewComponent?.(selectedFiles[0]), [filePreviewComponent]);
