@@ -23,7 +23,7 @@ const PreviewFileAction = ({ filePreviewPath, filePreviewComponent }) => {
   const filePath = selectedFiles?.[0]?.path ? `${filePreviewPath}${selectedFiles[0].path}` : "";
 
   // Custom file preview component
-  const customPreview = useMemo(() => filePreviewComponent?.(selectedFiles[0]), [filePreviewComponent]);
+  const customPreview = useMemo(() => filePreviewComponent?.(selectedFiles[0]), [filePreviewComponent, selectedFiles]);
 
   const handleImageLoad = () => {
     setIsLoading(false); // Loading is complete
