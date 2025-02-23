@@ -23,10 +23,6 @@ const ContextMenu = ({ filesViewRef, contextMenuRef, menuItems, visible, clickPo
     const menuWidth = contextMenuContainer.width;
     const menuHeight = contextMenuContainer.height;
 
-    console.log("container", containerRect);
-    console.log("containerRect", containerRect);
-    console.log("contextMenuContainer", contextMenuContainer);
-
     // Check if there is enough space at the right for the context menu
     const leftToCursor = clickX - containerRect.left;
     const right = containerRect.width - (leftToCursor + scrollBarWidth) > menuWidth;
@@ -63,13 +59,20 @@ const ContextMenu = ({ filesViewRef, contextMenuRef, menuItems, visible, clickPo
 
   useEffect(() => {
     if (visible && contextMenuRef.current) {
-      contextMenuPosition();
-      contextMenuRef.current.classList.add("repositioned");
+      contextMenuRef.current.style.visibility = "hidden";
+      contextMenuRef.current.style.display = "block";
+
+      setTimeout(() => {
+        if (contextMenuRef.current) {
+          contextMenuPosition();
+          contextMenuRef.current.classList.add("repositioned");
+          contextMenuRef.current.style.visibility = "visible";
+        }
+      }, 0);
     } else {
-      setTop(0);
-      setLeft(0);
       setActiveSubMenuIndex(null);
       if (contextMenuRef.current) {
+        contextMenuRef.current.style.display = "none";
         contextMenuRef.current.classList.remove("repositioned");
       }
     }
