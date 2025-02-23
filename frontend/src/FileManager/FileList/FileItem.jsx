@@ -180,7 +180,7 @@ const FileItem = ({
   const handleDragStart = (e) => {
     e.dataTransfer.setDragImage(dragIconRef.current, 30, 50);
     e.dataTransfer.effectAllowed = "copy";
-    if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+    if (isActionAllowed(selectedFiles, Permission.MOVE)) {
       handleCutCopy(true);
     }
   };
@@ -207,9 +207,17 @@ const FileItem = ({
   const handleDrop = (e) => {
     e.preventDefault();
     if (fileSelected || !file.isDirectory) return;
-    if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+
+    if (
+      clipBoard.isMoving &&
+      isActionAllowed(selectedFiles, Permission.MOVE) &&
+      isActionAllowed([file], Permission.CREATE)
+    ) {
+      handlePasting(file);
+    } else if (isActionAllowed(selectedFiles, Permission.COPY) && isActionAllowed([file], Permission.CREATE)) {
       handlePasting(file);
     }
+
     setDropZoneClass((prev) => (prev ? "" : prev));
     setTooltipPosition(null);
   };

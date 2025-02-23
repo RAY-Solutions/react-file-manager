@@ -155,48 +155,83 @@ type File = {
 | Refresh File List              | `F5`               |
 | Clear Selection                | `Esc`              |
 
-## 🔒 Access Control & Permissions
+# 🔒 Access Control & Permissions
+
 The **`permissions`** prop allows you to define **access control rules** for files and directories.
 
-### **1️⃣ Permission Object Structure**
+## 1️⃣ Permission Object Structure
+
 ```typescript
 type Permission = {
   path: string;
+  create?: boolean;
   copy?: boolean;
+  move?: boolean;
   read?: boolean;
-  write?: boolean;
   delete?: boolean;
   upload?: boolean;
+  rename?: boolean;
   applyTo?: "file" | "folder";
 };
 ```
-📌 Important Notes:
-- If a permission is not set, it defaults to `true` (allowed).
-- The `path` property is a string representing the file or folder path.
-- If `applyTo` is not provided, the rule applies to both files and folders.
-- If `applyTo: "file"`, the rule applies only to files within the given path.
-- If `applyTo: "folder"`, the rule applies only to folders within the given path.
 
-### **2️⃣ Permissions Table**
+📌 **Important Notes:**
+- If a permission is **not set**, it **defaults to `true` (allowed)**.
+- The **`path`** property defines the **file or folder location**.
+- If **`applyTo`** is **not provided**, the rule applies to **both files and folders**.
+- If **`applyTo: "file"`**, the rule applies **only to files** in the given path.
+- If **`applyTo: "folder"`**, the rule applies **only to folders** in the given path.
+
+## 2️⃣ Permissions Table
+
 | **Permission**   | **Files?** | **Folders?** | **Description** |
 |------------------|-----------|-------------|-----------------|
-| **`copy`**      | ✅ Yes     | ✅ Yes      | Allows copying the file or folder to another location. |
-| **`read`**      | ✅ Yes     | ✅ Yes      | Allows opening/viewing or downloading(files only) the file or folder. |
-| **`write`**     | ✅ Yes     | ✅ Yes      | Allows renaming the file or folder. |
-| **`delete`**    | ✅ Yes     | ✅ Yes      | Allows deleting the file or folder. |
-| **`upload`**    | ❌ No      | ✅ Yes      | Allows uploading new files to a folder (not applicable to individual files). |
+| **`create`**    | ✅ Yes     | ✅ Yes      | Allows creating **new files and folders** inside a directory. Also allows **pasting files/folders into the folder**. |
+| **`copy`**      | ✅ Yes     | ✅ Yes      | Allows copying a file or folder **to another location**. |
+| **`move`**      | ✅ Yes     | ✅ Yes      | Allows moving (cut-paste) files or folders **to another location**. Requires `create` in the destination. |
+| **`read`**      | ✅ Yes     | ✅ Yes      | Allows opening/viewing or downloading (for files). |
+| **`delete`**    | ✅ Yes     | ✅ Yes      | Allows deleting files or folders. |
+| **`upload`**    | ❌ No      | ✅ Yes      | Allows **uploading external files** into a folder (not applicable to files). |
+| **`rename`**    | ✅ Yes     | ✅ Yes      | Allows renaming files or folders. |
 
-### **3️⃣ How Permissions Apply**
+## 3️⃣ How `create` Affects Pasting Files/Folders
+
+🚀 If `create: true` is **set on a folder**, users can:
+- **Paste copied files/folders into it** (Copy-Paste requires `copy` in the source).
+- **Move (cut-paste) files/folders into it** (Move requires `move` in the source).
+
+🚫 If `create: false` is **set on a folder**, users **cannot paste files or folders inside it**.
+
+### ✅ Allow Pasting into `/Documents/`
+```json
+[
+  { "path": "/Documents/**", "create": true } 
+]
+```
+📌 **Users can paste new files and folders inside `/Documents/`.**
+
+### ❌ Prevent Pasting into `/Restricted/`
+```json
+[
+  { "path": "/Restricted/**", "create": false } 
+]
+```
+📌 **Users cannot paste into `/Restricted/` because `create` is denied.**
+
+## 4️⃣ How Permissions Apply
+
 Permissions can be applied to:
-1. **A Specific File** → Example: `"/Pictures/Profile.jpg"`
-2. **A Specific Folder (Only the Folder Itself)** → Example: `"/Documents"`
-3. **A Folder’s Immediate Children (One Level Only)** → Example: `"/Documents/*"`
-4. **All Folder Contents (Recursive, All Levels)** → Example: `"/Documents/**"`
-5. **Global Permissions (Entire File System)** → Example: `"/**"`
+
+1️⃣ **A Specific File** → Example: `"/Pictures/Profile.jpg"`  
+2️⃣ **A Specific Folder (Only the Folder Itself)** → Example: `"/Documents"`  
+3️⃣ **A Folder’s Immediate Children (One Level Only)** → Example: `"/Documents/*"`  
+4️⃣ **All Folder Contents (Recursive, All Levels)** → Example: `"/Documents/**"`  
+5️⃣ **Global Permissions (Entire File System)** → Example: `"/**"`
 
 📌 **When `applyTo` is used**, only the specified type (**file or folder**) will be affected.
 
-### **4️⃣ Understanding Path Patterns**
+## 5️⃣ Understanding Path Patterns
+
 | **Path Pattern**          | **Applies To** | **Immediate Only?** | **Recursive (All Levels)?** | **applyTo Default** |
 |--------------------------|---------------|---------------------|---------------------------|---------------------|
 | `/Documents`             | The folder itself (not its contents) | ✅ | ❌ | Files & Folders |
@@ -205,17 +240,19 @@ Permissions can be applied to:
 | `/Pictures/Profile.jpg`  | A specific file | ✅ | ❌ | Files Only |
 | `/**`                    | The entire file system | ❌ | ✅ | Files & Folders |
 
-### **5️⃣ Example Usage in FileManager**
+## 6️⃣ Example Usage in FileManager
+
 ```jsx
 <FileManager
   files={files}
   permissions={[
-    { path: "/Documents", read: true, write: false },
-    { path: "/Documents/*", read: true, write: true, applyTo: "file" },
-    { path: "/Documents/**", read: true, write: false, applyTo: "folder" },
-    { path: "/Pictures/Profile.jpg", read: true, delete: false },
+    { path: "/Documents", read: true, create: false },
+    { path: "/Documents/*", read: true, create: true, applyTo: "file" },
+    { path: "/Documents/**", read: true, create: false, applyTo: "folder" },
+    { path: "/Pictures/Profile.jpg", read: true, delete: false, rename: true },
     { path: "/Uploads", upload: true, applyTo: "folder" },
-    { path: "/**", read: true, write: true, delete: true },
+    { path: "/Archive", move: true, copy: false },
+    { path: "/**", read: true, create: true, delete: true, rename: true },
   ]}
 />
 ```

@@ -31,10 +31,10 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
       icon: <BsFolderPlus size={17} strokeWidth={0.3} />,
       title: "New Folder",
       text: "New",
-      permission: allowCreateFolder && isActionAllowed([currentFolder], Permission.WRITE, false),
+      permission: allowCreateFolder && isActionAllowed([currentFolder], Permission.CREATE, false),
       onClick: () => {
         setShowLeftDropdown(false);
-        if (isActionAllowed([currentFolder], Permission.WRITE)) {
+        if (isActionAllowed([currentFolder], Permission.CREATE)) {
           triggerAction.show("createFolder");
         }
       },
@@ -53,7 +53,7 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
     {
       icon: <FaRegPaste size={18} />,
       text: "Paste",
-      permission: !!clipBoard && isActionAllowed([currentFolder], Permission.WRITE, false),
+      permission: !!clipBoard && isActionAllowed([currentFolder], Permission.CREATE, false),
       onClick: handleFilePasting,
     },
   ];
@@ -77,7 +77,7 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
   function handleFilePasting() {
     setShowLeftDropdown(false);
     setShowDropdown(false);
-    if (isActionAllowed([currentFolder], Permission.WRITE)) {
+    if (isActionAllowed([currentFolder], Permission.CREATE)) {
       handlePasting(currentFolder);
     }
   }
@@ -93,10 +93,10 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
     {
       icon: <BsScissors size={18} />,
       text: "Cut",
-      permission: isActionAllowed(selectedFiles, Permission.WRITE, false),
+      permission: isActionAllowed(selectedFiles, Permission.MOVE, false),
       onClick: () => {
         setShowLeftDropdown(false);
-        if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+        if (isActionAllowed(selectedFiles, Permission.MOVE)) {
           handleCutCopy(true);
         }
       },
@@ -115,16 +115,16 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
     {
       icon: <FaRegPaste size={18} />,
       text: "Paste",
-      permission: !!clipBoard && isActionAllowed([currentFolder], Permission.WRITE, false),
+      permission: !!clipBoard && isActionAllowed([currentFolder], Permission.CREATE, false),
       onClick: handleFilePasting,
     },
     {
       icon: <BiRename size={19} />,
       text: "Rename",
-      permission: selectedFiles.length === 1 && isActionAllowed(selectedFiles, Permission.WRITE, false),
+      permission: selectedFiles.length === 1 && isActionAllowed(selectedFiles, Permission.RENAME, false),
       onClick: () => {
         setShowLeftDropdown(false);
-        if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+        if (isActionAllowed(selectedFiles, Permission.RENAME)) {
           triggerAction.show("rename");
         }
       },

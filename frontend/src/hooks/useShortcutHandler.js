@@ -15,7 +15,7 @@ export const useShortcutHandler = (triggerAction, onRefresh, disableMultipleSele
   const { isActionAllowed } = usePermissions();
 
   const triggerCreateFolder = () => {
-    if (isActionAllowed([currentFolder], Permission.WRITE)) {
+    if (isActionAllowed([currentFolder], Permission.CREATE)) {
       triggerAction.show("createFolder");
     }
   };
@@ -27,7 +27,7 @@ export const useShortcutHandler = (triggerAction, onRefresh, disableMultipleSele
   };
 
   const triggerCutItems = () => {
-    if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+    if (isActionAllowed(selectedFiles, Permission.MOVE)) {
       handleCutCopy(true);
     }
   };
@@ -39,13 +39,13 @@ export const useShortcutHandler = (triggerAction, onRefresh, disableMultipleSele
   };
 
   const triggerPasteItems = () => {
-    if (isActionAllowed([currentFolder], Permission.WRITE)) {
+    if (isActionAllowed([currentFolder], Permission.CREATE)) {
       handlePasting(currentFolder);
     }
   };
 
   const triggerRename = () => {
-    if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+    if (isActionAllowed(selectedFiles, Permission.RENAME)) {
       triggerAction.show("rename");
     }
   };

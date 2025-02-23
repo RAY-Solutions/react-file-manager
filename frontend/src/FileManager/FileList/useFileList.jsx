@@ -42,21 +42,21 @@ const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, di
   };
 
   const handleMoveOrCopyItems = (isMoving) => {
-    if (isActionAllowed(selectedFiles, isMoving ? Permission.WRITE : Permission.COPY)) {
+    if (isActionAllowed(selectedFiles, isMoving ? Permission.MOVE : Permission.COPY)) {
       handleCutCopy(isMoving);
     }
     setVisible(false);
   };
 
   const handleFilePasting = () => {
-    if (isActionAllowed([lastSelectedFile], Permission.WRITE)) {
+    if (isActionAllowed([lastSelectedFile], Permission.CREATE)) {
       handlePasting(lastSelectedFile);
     }
     setVisible(false);
   };
 
   const handleRenaming = () => {
-    if (isActionAllowed(selectedFiles, Permission.WRITE)) {
+    if (isActionAllowed(selectedFiles, Permission.RENAME)) {
       triggerAction.show("rename");
     }
     setVisible(false);
@@ -83,7 +83,7 @@ const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, di
   };
 
   const handleCreateNewFolder = () => {
-    if (isActionAllowed([currentFolder], Permission.WRITE)) {
+    if (isActionAllowed([currentFolder], Permission.CREATE)) {
       triggerAction.show("createFolder");
     }
     setVisible(false);
@@ -139,7 +139,7 @@ const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, di
       title: "New folder",
       icon: <BsFolderPlus size={18} />,
       onClick: handleCreateNewFolder,
-      className: `${isActionAllowed([currentFolder], Permission.WRITE, false) ? "" : "disable"}`,
+      className: `${isActionAllowed([currentFolder], Permission.CREATE, false) ? "" : "disable"}`,
     },
     {
       title: "Upload",
@@ -168,7 +168,7 @@ const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, di
       title: "Cut",
       icon: <BsScissors size={19} />,
       onClick: () => handleMoveOrCopyItems(true),
-      className: `${isActionAllowed(selectedFiles, Permission.WRITE, false) ? "" : "disable"}`,
+      className: `${isActionAllowed(selectedFiles, Permission.MOVE, false) ? "" : "disable"}`,
     },
     {
       title: "Copy",
@@ -190,7 +190,7 @@ const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, di
       icon: <BiRename size={19} />,
       onClick: handleRenaming,
       hidden: selectedFiles.length > 1,
-      className: `${isActionAllowed(selectedFiles, Permission.WRITE, false) ? "" : "disable"}`,
+      className: `${isActionAllowed(selectedFiles, Permission.RENAME, false) ? "" : "disable"}`,
     },
     {
       title: "Download",

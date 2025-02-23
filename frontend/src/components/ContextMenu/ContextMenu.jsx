@@ -79,8 +79,8 @@ const ContextMenu = ({ filesViewRef, contextMenuRef, menuItems, visible, clickPo
         onClick={(e) => e.stopPropagation()}
         className={`fm-context-menu ${top ? "visible" : "hidden"}`}
         style={{
-          top: top + "!important",
-          left: left + "!important",
+          top: top,
+          left: left,
         }}
       >
         <div className="file-context-menu-list">

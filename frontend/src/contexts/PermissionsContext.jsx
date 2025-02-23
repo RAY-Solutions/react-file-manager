@@ -3,19 +3,23 @@ import PropTypes from "prop-types";
 import AccessDeniedModal from "../components/AccessDeniedModal/AccessDeniedModal";
 
 export const Permission = Object.freeze({
+  CREATE: "create",
   COPY: "copy",
+  MOVE: "move",
   READ: "read",
-  WRITE: "write",
   DELETE: "delete",
   UPLOAD: "upload",
+  RENAME: "rename",
 });
 
 const readablePermissionNames = {
+  [Permission.CREATE]: "Create",
   [Permission.COPY]: "Copy",
+  [Permission.MOVE]: "Move",
   [Permission.READ]: "Read",
-  [Permission.WRITE]: "Write",
   [Permission.DELETE]: "Delete",
   [Permission.UPLOAD]: "Upload",
+  [Permission.RENAME]: "Rename",
 };
 
 const PermissionsContext = createContext();
@@ -40,16 +44,28 @@ const mergePermissions = (permissions) => {
       mergedPermissions.set(key, {
         path: perm.path,
         applyTo: perm.applyTo || existing.applyTo,
-        copy: perm.copy !== undefined ? perm.copy : existing.copy,
-        read: perm.read !== undefined ? perm.read : existing.read,
-        write: perm.write !== undefined ? perm.write : existing.write,
-        delete: perm.delete !== undefined ? perm.delete : existing.delete,
-        upload: perm.upload !== undefined ? perm.upload : existing.upload,
+        copy: perm.copy !== undefined ? perm.copy && existing.copy : existing.copy,
+        read: perm.read !== undefined ? perm.read && existing.read : existing.read,
+        write: perm.write !== undefined ? perm.write && existing.write : existing.write,
+        delete: perm.delete !== undefined ? perm.delete && existing.delete : existing.delete,
+        upload: perm.upload !== undefined ? perm.upload && existing.upload : existing.upload,
       });
     }
   });
 
-  return Array.from(mergedPermissions.values());
+  // Convert Map back to an array
+  let permissionArray = Array.from(mergedPermissions.values());
+
+  // **Prioritize specific rules over wildcards**
+  permissionArray.sort((a, b) => {
+    const depthA = a.path.split("/").length;
+    const depthB = b.path.split("/").length;
+
+    // More specific rules (deeper paths) come first
+    return depthB - depthA;
+  });
+
+  return permissionArray;
 };
 
 export const PermissionsProvider = ({ children, permissions }) => {
@@ -69,50 +85,41 @@ export const PermissionsProvider = ({ children, permissions }) => {
    */
   const isActionAllowed = (files, permissionType, riseError = true) => {
     const allowed = files.every((file) => {
-      file = file || {
-        name: "Home",
-        isDirectory: true,
-        path: "/",
-      };
+      file = file || { name: "Home", isDirectory: true, path: "/" };
       const filePath = file?.path || "/";
       let permissionFound = false;
       let permissionAllowed = true;
+      let highestPriority = -1; // Higher priority = more specific match
 
       for (const perm of cleanedPermissions) {
         const appliesToFile = perm.applyTo === "file" || !perm.applyTo;
         const appliesToFolder = perm.applyTo === "folder" || !perm.applyTo;
 
-        if (perm.path === "/**" && ((file.isDirectory && appliesToFolder) || (!file.isDirectory && appliesToFile))) {
-          permissionFound = true;
-          permissionAllowed = perm[permissionType] ?? true;
-          break;
+        // Skip if rule applies to files but this is a folder, or vice versa
+        if ((file.isDirectory && !appliesToFolder) || (!file.isDirectory && !appliesToFile)) {
+          continue;
         }
 
-        if (perm.path === filePath && ((file.isDirectory && appliesToFolder) || (!file.isDirectory && appliesToFile))) {
-          permissionFound = true;
-          permissionAllowed = perm[permissionType] ?? true;
-          break;
-        }
+        // Convert wildcard path to regex
+        let permRegex = perm.path
+          .replace(/\/\*\*/g, "/.*") // `/**` -> `/.*` (matches everything recursively)
+          .replace(/\/\*/g, "/[^/]+"); // `/*` -> `/[^/]+` (matches direct children only)
 
-        if (perm.path.endsWith("/*")) {
-          const parentPath = perm.path.slice(0, -2);
-          if (filePath.startsWith(parentPath) && filePath.split("/").length === parentPath.split("/").length + 1) {
-            if ((file.isDirectory && appliesToFolder) || (!file.isDirectory && appliesToFile)) {
-              permissionFound = true;
-              permissionAllowed = perm[permissionType] ?? true;
-              break;
-            }
+        const regex = new RegExp(`^${permRegex}$`);
+        if (regex.test(filePath)) {
+          permissionFound = true;
+          const priority = perm.path.split("/").length;
+
+          // Prioritize more specific rules over wildcards
+          if (priority > highestPriority) {
+            highestPriority = priority;
+            permissionAllowed = perm[permissionType] ?? true;
           }
-        }
 
-        if (perm.path.endsWith("/**")) {
-          const parentPath = perm.path.slice(0, -3);
-          if (filePath.startsWith(parentPath)) {
-            if ((file.isDirectory && appliesToFolder) || (!file.isDirectory && appliesToFile)) {
-              permissionFound = true;
-              permissionAllowed = perm[permissionType] ?? true;
-              break;
-            }
+          // If we find a `false`, stop searching (most restrictive takes precedence)
+          if (perm[permissionType] === false) {
+            permissionAllowed = false;
+            break;
           }
         }
       }
@@ -142,11 +149,13 @@ PermissionsProvider.propTypes = {
   permissions: PropTypes.arrayOf(
     PropTypes.shape({
       path: PropTypes.string.isRequired,
+      create: PropTypes.bool,
       copy: PropTypes.bool,
+      move: PropTypes.bool,
       read: PropTypes.bool,
-      write: PropTypes.bool,
       delete: PropTypes.bool,
       upload: PropTypes.bool,
+      rename: PropTypes.bool,
       applyTo: PropTypes.oneOf(["file", "folder"]),
     }),
   ).isRequired,
