@@ -37,7 +37,7 @@ const Actions = ({
           onFileUploaded={onFileUploaded}
         />
       ),
-      width: "32rem",
+      width: "42rem",
     },
     delete: {
       title: "Delete",

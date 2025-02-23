@@ -60,10 +60,14 @@ const ContextMenu = ({ filesViewRef, contextMenuRef, menuItems, visible, clickPo
   useEffect(() => {
     if (visible && contextMenuRef.current) {
       contextMenuPosition();
+      contextMenuRef.current.classList.add("repositioned");
     } else {
       setTop(0);
       setLeft(0);
       setActiveSubMenuIndex(null);
+      if (contextMenuRef.current) {
+        contextMenuRef.current.classList.remove("repositioned");
+      }
     }
   }, [visible]);
 
@@ -75,8 +79,8 @@ const ContextMenu = ({ filesViewRef, contextMenuRef, menuItems, visible, clickPo
         onClick={(e) => e.stopPropagation()}
         className={`fm-context-menu ${top ? "visible" : "hidden"}`}
         style={{
-          top: top,
-          left: left,
+          top: top + "!important",
+          left: left + "!important",
         }}
       >
         <div className="file-context-menu-list">

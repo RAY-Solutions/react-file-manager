@@ -69,6 +69,11 @@ export const PermissionsProvider = ({ children, permissions }) => {
    */
   const isActionAllowed = (files, permissionType, riseError = true) => {
     const allowed = files.every((file) => {
+      file = file || {
+        name: "Home",
+        isDirectory: true,
+        path: "/",
+      };
       const filePath = file?.path || "/";
       let permissionFound = false;
       let permissionAllowed = true;
@@ -77,7 +82,7 @@ export const PermissionsProvider = ({ children, permissions }) => {
         const appliesToFile = perm.applyTo === "file" || !perm.applyTo;
         const appliesToFolder = perm.applyTo === "folder" || !perm.applyTo;
 
-        if (perm.path === "/**") {
+        if (perm.path === "/**" && ((file.isDirectory && appliesToFolder) || (!file.isDirectory && appliesToFile))) {
           permissionFound = true;
           permissionAllowed = perm[permissionType] ?? true;
           break;
