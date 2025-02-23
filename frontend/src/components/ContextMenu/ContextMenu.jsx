@@ -23,6 +23,10 @@ const ContextMenu = ({ filesViewRef, contextMenuRef, menuItems, visible, clickPo
     const menuWidth = contextMenuContainer.width;
     const menuHeight = contextMenuContainer.height;
 
+    console.log("container", containerRect);
+    console.log("containerRect", containerRect);
+    console.log("contextMenuContainer", contextMenuContainer);
+
     // Check if there is enough space at the right for the context menu
     const leftToCursor = clickX - containerRect.left;
     const right = containerRect.width - (leftToCursor + scrollBarWidth) > menuWidth;
