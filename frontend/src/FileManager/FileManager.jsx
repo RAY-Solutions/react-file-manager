@@ -174,11 +174,13 @@ FileManager.propTypes = {
   permissions: PropTypes.arrayOf(
     PropTypes.shape({
       path: PropTypes.string.isRequired,
+      create: PropTypes.bool,
       copy: PropTypes.bool,
+      move: PropTypes.bool,
       read: PropTypes.bool,
-      write: PropTypes.bool,
       delete: PropTypes.bool,
       upload: PropTypes.bool,
+      rename: PropTypes.bool,
       applyTo: PropTypes.oneOf(["file", "folder"]),
     }),
   ),
