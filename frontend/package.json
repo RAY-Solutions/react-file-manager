@@ -1,7 +1,7 @@
 {
   "name": "@ray-solutions/react-file-manager",
   "private": false,
-  "version": "1.14.1",
+  "version": "1.14.2",
   "type": "module",
   "module": "dist/react-file-manager.es.js",
   "files": [
