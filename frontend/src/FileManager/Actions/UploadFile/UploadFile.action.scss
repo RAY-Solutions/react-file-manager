@@ -68,18 +68,27 @@
     .heading {
       display: flex;
       gap: 4px;
+      .uploading {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
       .completed {
         width: 100%;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 4px;
+        button {
+          font-size: 12px;
+        }
       }
     }
 
     h2 {
       font-size: 0.9em;
       margin: 0;
+      font-weight: bold;
     }
 
     ul {

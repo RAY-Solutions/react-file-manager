@@ -132,10 +132,10 @@ const UploadFileAction = ({
         <div className="files-progress">
           <div className="heading">
             {Object.values(isUploading).some((fileUploading) => fileUploading) ? (
-              <>
+              <div className="uploading">
                 <h2>Uploading</h2>
                 <Loader loading={true} className="upload-loading" />
-              </>
+              </div>
             ) : (
               <div className="completed">
                 <h2>Completed</h2>
