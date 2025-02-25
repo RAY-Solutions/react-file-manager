@@ -68,6 +68,13 @@
     .heading {
       display: flex;
       gap: 4px;
+      .completed {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 4px;
+      }
     }
 
     h2 {

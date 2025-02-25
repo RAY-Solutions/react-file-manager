@@ -30,6 +30,7 @@ const Actions = ({
       title: "Upload",
       component: (
         <UploadFileAction
+          triggerAction={triggerAction}
           fileUploadConfig={fileUploadConfig}
           maxFileSize={maxFileSize}
           acceptedFileTypes={acceptedFileTypes}

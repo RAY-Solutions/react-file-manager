@@ -9,11 +9,18 @@ import { getDataSize } from "../../../utils/getDataSize";
 import { useFiles } from "../../../contexts/FilesContext";
 import "./UploadFile.action.scss";
 
-const UploadFileAction = ({ fileUploadConfig, maxFileSize, acceptedFileTypes, onFileUploading, onFileUploaded }) => {
+const UploadFileAction = ({
+  triggerAction,
+  fileUploadConfig,
+  maxFileSize,
+  acceptedFileTypes,
+  onFileUploading,
+  onFileUploaded,
+}) => {
   const [files, setFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState({});
-  const { currentFolder, currentPathFiles } = useFileNavigation();
+  const { currentFolder } = useFileNavigation();
   const { onError } = useFiles();
   const fileInputRef = useRef(null);
 
@@ -130,7 +137,12 @@ const UploadFileAction = ({ fileUploadConfig, maxFileSize, acceptedFileTypes, on
                 <Loader loading={true} className="upload-loading" />
               </>
             ) : (
-              <h2>Completed</h2>
+              <div className="completed">
+                <h2>Completed</h2>
+                <Button type="success" padding="0.2rem 0.4rem" onClick={triggerAction.close}>
+                  Close
+                </Button>
+              </div>
             )}
           </div>
           <ul>
