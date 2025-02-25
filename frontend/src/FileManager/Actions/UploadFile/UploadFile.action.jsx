@@ -30,10 +30,10 @@ const UploadFileAction = ({ fileUploadConfig, maxFileSize, acceptedFileTypes, on
       if (extError) return "File type is not allowed.";
     }
 
-    const fileExists = currentPathFiles.some(
-      (item) => item.name.toLowerCase() === file.name.toLowerCase() && !item.isDirectory,
-    );
-    if (fileExists) return "File already exists.";
+    // const fileExists = currentPathFiles.some(
+    //   (item) => item.name.toLowerCase() === file.name.toLowerCase() && !item.isDirectory,
+    // );
+    // if (fileExists) return "File already exists.";
 
     const sizeError = maxFileSize && file.size > maxFileSize;
     if (sizeError) return `Maximum upload size is ${getDataSize(maxFileSize, 0)}.`;
