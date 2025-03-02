@@ -103,7 +103,15 @@ const RenameAction = ({ filesViewRef, file, onRename, triggerAction }) => {
     setFileRenameError(false);
     validateApiCallback(onRename, "onRename", file, renameFile);
 
-    // setCurrentPathFiles((prev) => prev.filter((f) => f.key !== file.key)); // Todo: Should only filter on success API call
+    setCurrentPathFiles((prev) =>
+      prev.map((f) => {
+        if (f.key === file.key) {
+          f.isEditing = false;
+        }
+        return f;
+      }),
+    );
+
     triggerAction.close();
   }
 
