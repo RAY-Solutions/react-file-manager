@@ -58,7 +58,7 @@ const BreadCrumb = ({ rootFolder, onFileOpen }) => {
   };
 
   const handleResize = () => {
-    if (breadCrumbRef.current.scrollWidth > breadCrumbRef.current.clientWidth) {
+    if (breadCrumbRef?.current && breadCrumbRef.current.scrollWidth > breadCrumbRef.current.clientWidth) {
       const hiddenFolder = folders[1];
       const hiddenFolderWidth = foldersRef.current[1]?.clientWidth;
       setHiddenFoldersWidth((prev) => [...prev, hiddenFolderWidth]);
