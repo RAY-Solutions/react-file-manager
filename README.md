@@ -92,6 +92,7 @@ type File = {
   name: string;
   isDirectory: boolean;
   path: string;
+  displayName?: string; // Optional: Display name for the file or folder(Not recommended for files)
   updatedAt?: string; // Optional: Last update timestamp in ISO 8601 format
   size?: number; // Optional: File size in bytes (only applicable for files)
 };
