@@ -67,7 +67,11 @@ const BreadCrumb = ({ rootFolder, onFileOpen }) => {
       setHiddenFoldersWidth((prev) => [...prev, hiddenFolderWidth]);
       setHiddenFolders((prev) => [...prev, hiddenFolder]);
       setFolders((prev) => prev.filter((_, index) => index !== 1));
-    } else if (hiddenFolders.length > 0 && checkAvailableSpace() > hiddenFoldersWidth.at(-1)) {
+    } else if (
+      breadCrumbRef?.current &&
+      hiddenFolders.length > 0 &&
+      checkAvailableSpace() > hiddenFoldersWidth.at(-1)
+    ) {
       const newFolders = [folders[0], hiddenFolders.at(-1), ...folders.slice(1)];
       setFolders(newFolders);
       setHiddenFolders((prev) => prev.slice(0, -1));

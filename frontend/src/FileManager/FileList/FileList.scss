@@ -5,7 +5,7 @@
   display: flex;
   align-content: flex-start;
   flex-wrap: wrap;
-  column-gap: 0.5em;
+  column-gap: 1em;
   row-gap: 5px;
   height: calc(100% - 32px);
   @include overflow-y-scroll;
@@ -52,7 +52,7 @@
 
   .file-item {
     position: relative;
-    width: 138px;
+    width: 110px;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;

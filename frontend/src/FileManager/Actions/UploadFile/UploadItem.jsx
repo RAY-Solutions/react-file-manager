@@ -172,7 +172,7 @@ const UploadItem = ({
           {isUploaded ? (
             <FaRegCheckCircle title="Uploaded" className="upload-success" />
           ) : isCanceled || uploadFailed ? (
-            <IoMdRefresh className="retry-upload" title="Retry" onClick={handleRetry} />
+            <IoMdRefresh className="retry-upload" size={20} title="Retry" onClick={handleRetry} />
           ) : (
             <div
               className="rm-file"
