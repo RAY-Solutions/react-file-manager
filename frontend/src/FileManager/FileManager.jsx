@@ -134,6 +134,7 @@ FileManager.propTypes = {
   files: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
+      displayName: PropTypes.string,
       isDirectory: PropTypes.bool.isRequired,
       path: PropTypes.string.isRequired,
       updatedAt: dateStringValidator,

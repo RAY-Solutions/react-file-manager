@@ -129,7 +129,7 @@ export const PermissionsProvider = ({ children, permissions }) => {
 
     if (!allowed && riseError) {
       setDeniedPermission(readablePermissionNames[permissionType]);
-      setDeniedFile(files.length === 1 ? files[0].name : "");
+      setDeniedFile(files.length === 1 ? (files[0].displayName ?? files[0].name) : "");
       setShow(true);
     }
 

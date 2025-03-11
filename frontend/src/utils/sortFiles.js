@@ -1,4 +1,9 @@
-const sortAscending = (files) => files.sort((a, b) => a.name.localeCompare(b.name));
+const sortAscending = (files) =>
+  files.sort((a, b) => {
+    const aName = a.displayName || a.name;
+    const bName = b.displayName || b.name;
+    return aName.localeCompare(bName);
+  });
 
 const sortFiles = (items) => {
   const folders = items.filter((file) => file.isDirectory);

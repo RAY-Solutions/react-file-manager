@@ -255,7 +255,7 @@ const FileItem = ({
       className={`file-item-container ${dropZoneClass} ${isFileMoving ? "file-moving" : ""}`}
       style={{ touchAction: "none" }}
       tabIndex={0}
-      title={file.name}
+      title={file.displayName ?? file.name}
       onKeyDown={handleOnKeyDown}
       onMouseOver={handleMouseOver}
       onMouseLeave={handleMouseLeave}
@@ -301,8 +301,8 @@ const FileItem = ({
           </div>
         ) : (
           <div className={activeLayout === "list-layout" ? "text-truncate" : "file-name"}>
-            <span title={file.name} className="file-name">
-              {ellipsisInMiddle(file.name)}
+            <span title={file.displayName ?? file.name} className="file-name">
+              {ellipsisInMiddle(file.displayName ?? file.name)}
             </span>
           </div>
         )}
@@ -318,7 +318,7 @@ const FileItem = ({
       {/* Drag Icon & Tooltip Setup */}
       {tooltipPosition && (
         <div style={{ top: `${tooltipPosition.y}px`, left: `${tooltipPosition.x}px` }} className="drag-move-tooltip">
-          Move to <span className="drop-zone-file-name">{file.name}</span>
+          Move to <span className="drop-zone-file-name">{file.displayName ?? file.name}</span>
         </div>
       )}
 

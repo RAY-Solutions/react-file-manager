@@ -10,7 +10,7 @@ const DeleteAction = ({ triggerAction, onDelete }) => {
   useEffect(() => {
     setDeleteMsg(() => {
       if (selectedFiles.length === 1) {
-        return `Are you sure you want to delete "${selectedFiles[0].name}"?`;
+        return `Are you sure you want to delete "${selectedFiles[0].displayName ?? selectedFiles[0].name}"?`;
       } else if (selectedFiles.length > 1) {
         return `Are you sure you want to delete these ${selectedFiles.length} items?`;
       }

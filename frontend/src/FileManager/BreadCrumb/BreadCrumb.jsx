@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MdHome, MdMoreHoriz, MdOutlineNavigateNext } from "react-icons/md";
 import { useFileNavigation } from "../../contexts/FileNavigationContext";
+import { useFiles } from "../../contexts/FilesContext";
 import { useDetectOutsideClick } from "../../hooks/useDetectOutsideClick";
 import "./BreadCrumb.scss";
 
@@ -10,6 +11,7 @@ const BreadCrumb = ({ rootFolder, onFileOpen }) => {
   const [hiddenFoldersWidth, setHiddenFoldersWidth] = useState([]);
   const [showHiddenFolders, setShowHiddenFolders] = useState(false);
 
+  const { filesDisplayNames } = useFiles();
   const { currentPath, setCurrentPath } = useFileNavigation();
   const breadCrumbRef = useRef(null);
   const foldersRef = useRef([]);
@@ -22,15 +24,16 @@ const BreadCrumb = ({ rootFolder, onFileOpen }) => {
     setFolders(() => {
       let path = "";
       return currentPath?.split("/").map((item) => {
+        const displayName = filesDisplayNames.get(`${path}/${item}`);
         return {
-          name: item || rootFolder,
+          name: displayName || item || rootFolder,
           path: item === "" ? item : (path += `/${item}`),
         };
       });
     });
     setHiddenFolders([]);
     setHiddenFoldersWidth([]);
-  }, [currentPath, rootFolder]);
+  }, [currentPath, filesDisplayNames, rootFolder]);
 
   const switchFolder = (folder) => {
     if (folder.path === currentPath) return;

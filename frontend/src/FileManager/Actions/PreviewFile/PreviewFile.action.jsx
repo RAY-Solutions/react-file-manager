@@ -51,7 +51,7 @@ const PreviewFileAction = ({ filePreviewPath, filePreviewComponent }) => {
             <span className="error-icon">{fileIcons[extension] ?? <FaRegFileAlt size={73} />}</span>
             <span className="error-msg">Sorry! Preview is not available for this file.</span>
             <div className="file-info">
-              <span className="file-name">{selectedFiles[0].name}</span>
+              <span className="file-name">{selectedFiles[0].displayName ?? selectedFiles[0].name}</span>
               {selectedFiles[0].size && <span>-</span>}
               <span className="file-size">{getDataSize(selectedFiles[0].size)}</span>
             </div>

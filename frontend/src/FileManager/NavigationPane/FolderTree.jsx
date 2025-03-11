@@ -53,8 +53,8 @@ const FolderTree = ({ folder, onFileOpen }) => {
             ) : (
               <FaRegFolder size={17} className="folder-close-icon" />
             )}
-            <span className="sb-folder-name" title={folder.name}>
-              {folder.name}
+            <span className="sb-folder-name" title={folder.displayName ?? folder.name}>
+              {folder.displayName ?? folder.name}
             </span>
           </div>
         </div>
@@ -77,8 +77,8 @@ const FolderTree = ({ folder, onFileOpen }) => {
           ) : (
             <FaRegFolder size={17} className="folder-close-icon" />
           )}
-          <span className="sb-folder-name" title={folder.name}>
-            {folder.name}
+          <span className="sb-folder-name" title={folder.displayName ?? folder.name}>
+            {folder.displayName ?? folder.name}
           </span>
         </div>
       </div>
