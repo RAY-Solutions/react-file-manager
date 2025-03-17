@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import FileItem from "./FileItem";
 import { useFileNavigation } from "../../contexts/FileNavigationContext";
 import { useLayout } from "../../contexts/LayoutContext";
@@ -7,6 +7,7 @@ import { useDetectOutsideClick } from "../../hooks/useDetectOutsideClick";
 import useFileList from "./useFileList";
 import FilesHeader from "./FilesHeader";
 import "./FileList.scss";
+import FolderLoadingSkeleton from "../../components/FolderLoadingSkeleton/FolderLoadingSkeleton";
 
 const FileList = ({
   onCreateFolder,
@@ -16,8 +17,9 @@ const FileList = ({
   enableFilePreview,
   triggerAction,
   disableMultipleSelection,
+  folderLoaderPaths,
 }) => {
-  const { currentPathFiles } = useFileNavigation();
+  const { currentPath, currentPathFiles } = useFileNavigation();
   const filesViewRef = useRef(null);
   const { activeLayout } = useLayout();
 
@@ -35,6 +37,14 @@ const FileList = ({
   } = useFileList(onRefresh, onFileOpen, enableFilePreview, triggerAction, disableMultipleSelection);
 
   const contextMenuRef = useDetectOutsideClick(() => setVisible(false));
+
+  const showFolderLoader = useMemo(() => {
+    const path = currentPath || "/";
+    if (folderLoaderPaths?.length > 0 && folderLoaderPaths.includes(path)) {
+      return true;
+    }
+    return false;
+  }, [currentPath, folderLoaderPaths]);
 
   return (
     <div
@@ -69,8 +79,10 @@ const FileList = ({
           ))}
         </>
       ) : (
-        <div className="empty-folder">This folder is empty.</div>
+        folderLoaderPaths.length === 0 && <div className="empty-folder">This folder is empty.</div>
       )}
+
+      {showFolderLoader && <FolderLoadingSkeleton layout={activeLayout} />}
 
       <ContextMenu
         filesViewRef={filesViewRef}

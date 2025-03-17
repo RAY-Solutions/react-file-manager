@@ -3,8 +3,9 @@ import FolderTree from "./FolderTree";
 import { getParentPath } from "../../utils/getParentPath";
 import { useFiles } from "../../contexts/FilesContext";
 import "./NavigationPane.scss";
+import FolderLoadingSkeleton from "../../components/FolderLoadingSkeleton/FolderLoadingSkeleton";
 
-const NavigationPane = ({ onFileOpen }) => {
+const NavigationPane = ({ folderLoaderPaths, onFileOpen }) => {
   const [foldersTree, setFoldersTree] = useState([]);
   const { files } = useFiles();
 
@@ -40,8 +41,9 @@ const NavigationPane = ({ onFileOpen }) => {
           })}
         </>
       ) : (
-        <div className="empty-nav-pane">Nothing here yet</div>
+        folderLoaderPaths.length === 0 && <div className="empty-nav-pane">Nothing here yet</div>
       )}
+      {folderLoaderPaths.length > 0 && <FolderLoadingSkeleton forNavigation={true} />}
     </div>
   );
 };

@@ -48,6 +48,7 @@ const FileManager = ({
   fontFamily = "Nunito Sans, sans-serif",
   disableMultipleSelection = false,
   permissions = [],
+  folderLoaderPaths = [],
 }) => {
   const triggerAction = useTriggerAction();
   const { containerRef, colSizes, isDragging, handleMouseMove, handleMouseUp, handleMouseDown } = useColumnResize(
@@ -84,7 +85,7 @@ const FileManager = ({
                     className="files-container"
                   >
                     <div className="navigation-pane" style={{ width: colSizes.col1 + "%" }}>
-                      <NavigationPane onFileOpen={onFileOpen} />
+                      <NavigationPane folderLoaderPaths={folderLoaderPaths} onFileOpen={onFileOpen} />
                       <div
                         className={`sidebar-resize ${isDragging ? "sidebar-dragging" : ""}`}
                         onMouseDown={handleMouseDown}
@@ -101,6 +102,7 @@ const FileManager = ({
                         enableFilePreview={enableFilePreview}
                         triggerAction={triggerAction}
                         disableMultipleSelection={disableMultipleSelection}
+                        folderLoaderPaths={folderLoaderPaths}
                       />
                     </div>
                   </section>
@@ -146,6 +148,7 @@ FileManager.propTypes = {
     headers: PropTypes.objectOf(PropTypes.string),
   }),
   isLoading: PropTypes.bool,
+  folderLoaderPaths: PropTypes.arrayOf(PropTypes.string),
   onCreateFolder: PropTypes.func,
   onFileUploading: PropTypes.func,
   onFileUploaded: PropTypes.func,
