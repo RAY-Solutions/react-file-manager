@@ -41,7 +41,9 @@ svg {
     font-family: var(--file-manager-font-family);
   }
   button:disabled {
-    pointer-events: none;
+    pointer-events: none !important;
+    opacity: 0.5 !important;
+    color: black !important;
   }
 
   border-radius: 8px;
