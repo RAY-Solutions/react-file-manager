@@ -14,7 +14,14 @@ import { useDetectOutsideClick } from "../../hooks/useDetectOutsideClick";
 import "./Toolbar.scss";
 import { Permission, usePermissions } from "../../contexts/PermissionsContext";
 
-const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutChange, onRefresh, triggerAction }) => {
+const Toolbar = ({
+  allowCreateFolder = true,
+  allowUploadFile = true,
+  onLayoutChange,
+  onRefresh,
+  triggerAction,
+  folderLoaderPaths,
+}) => {
   const [showToggleViewMenu, setShowToggleViewMenu] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const { currentFolder } = useFileNavigation();
@@ -67,6 +74,7 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
     {
       icon: <FiRefreshCw size={16} />,
       title: "Refresh",
+      disabled: folderLoaderPaths && folderLoaderPaths?.length > 0,
       onClick: () => {
         validateApiCallback(onRefresh, "onRefresh", currentFolder);
         setClipBoard(null);
@@ -170,7 +178,13 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
               {toolbarLeftOnSelectItems
                 .filter((item) => item.permission)
                 .map((item, index) => (
-                  <button className="item-action" key={index} onClick={item.onClick} title={item.title || item.text}>
+                  <button
+                    disabled={item.disabled}
+                    className="item-action"
+                    key={index}
+                    onClick={item.onClick}
+                    title={item.title || item.text}
+                  >
                     {item.icon}
                     {Boolean(item.text) && <span>{item.text}</span>}
                   </button>
@@ -188,6 +202,7 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
                 .map((item, index) => (
                   <button
                     className="item-action file-action"
+                    disabled={item.disabled}
                     key={index}
                     onClick={item.onClick}
                     title={item.title || item.text}
@@ -231,7 +246,13 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
               {toolbarLeftItems
                 .filter((item) => item.permission)
                 .map((item, index) => (
-                  <button className="item-action" key={index} onClick={item.onClick} title={item.title || item.text}>
+                  <button
+                    disabled={item.disabled}
+                    className="item-action"
+                    key={index}
+                    onClick={item.onClick}
+                    title={item.title || item.text}
+                  >
                     {item.icon}
                     {Boolean(item.text) && <span>{item.text}</span>}
                   </button>
@@ -242,7 +263,13 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
             {toolbarLeftItems
               .filter((item) => item.permission)
               .map((item, index) => (
-                <button className="item-action" key={index} onClick={item.onClick} title={item.title || item.text}>
+                <button
+                  disabled={item.disabled}
+                  className="item-action"
+                  key={index}
+                  onClick={item.onClick}
+                  title={item.title || item.text}
+                >
                   {item.icon}
                   {Boolean(item.text) && <span>{item.text}</span>}
                 </button>
@@ -252,7 +279,12 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
         <div>
           {toolbarRightItems.map((item, index) => (
             <div key={index} className="toolbar-left-items">
-              <button className="item-action icon-only" title={item.title} onClick={item.onClick}>
+              <button
+                disabled={item.disabled}
+                className="item-action icon-only"
+                title={item.title}
+                onClick={item.onClick}
+              >
                 {item.icon}
               </button>
               {index !== toolbarRightItems.length - 1 && <div className="item-separator"></div>}

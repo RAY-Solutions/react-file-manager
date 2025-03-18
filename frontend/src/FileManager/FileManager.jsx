@@ -77,6 +77,7 @@ const FileManager = ({
                     onLayoutChange={onLayoutChange}
                     onRefresh={onRefresh}
                     triggerAction={triggerAction}
+                    folderLoaderPaths={folderLoaderPaths}
                   />
                   <section
                     ref={containerRef}

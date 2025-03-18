@@ -40,6 +40,9 @@ svg {
   button {
     font-family: var(--file-manager-font-family);
   }
+  button:disabled {
+    pointer-events: none;
+  }
 
   border-radius: 8px;
   position: relative;

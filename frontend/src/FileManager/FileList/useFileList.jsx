@@ -13,7 +13,14 @@ import { duplicateNameHandler } from "../../utils/duplicateNameHandler";
 import { validateApiCallback } from "../../utils/validateApiCallback";
 import { Permission, usePermissions } from "../../contexts/PermissionsContext";
 
-const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, disableMultipleSelection) => {
+const useFileList = (
+  onRefresh,
+  onFileOpen,
+  enableFilePreview,
+  triggerAction,
+  disableMultipleSelection,
+  folderLoaderPaths,
+) => {
   const [selectedFileIndexes, setSelectedFileIndexes] = useState([]);
   const [visible, setVisible] = useState(false);
   const [isSelectionCtx, setIsSelectionCtx] = useState(false);
@@ -133,6 +140,7 @@ const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, di
       title: "Refresh",
       icon: <FiRefreshCw size={18} />,
       onClick: handleRefresh,
+      className: `${folderLoaderPaths && folderLoaderPaths.length > 0 ? "disable" : ""}`,
       divider: true,
     },
     {

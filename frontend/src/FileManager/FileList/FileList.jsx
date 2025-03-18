@@ -34,7 +34,7 @@ const FileList = ({
     selectedFileIndexes,
     clickPosition,
     isSelectionCtx,
-  } = useFileList(onRefresh, onFileOpen, enableFilePreview, triggerAction, disableMultipleSelection);
+  } = useFileList(onRefresh, onFileOpen, enableFilePreview, triggerAction, disableMultipleSelection, folderLoaderPaths);
 
   const contextMenuRef = useDetectOutsideClick(() => setVisible(false));
 
