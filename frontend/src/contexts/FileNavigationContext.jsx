@@ -12,7 +12,13 @@ export const FileNavigationProvider = ({ children, initialPath }) => {
   const [currentPathFiles, setCurrentPathFiles] = useState([]);
 
   useEffect(() => {
-    if (Array.isArray(files) && files.length > 0) {
+    if (!Array.isArray(files)) return;
+    if (files.length === 1 && files[0].isPlaceholder) {
+      setCurrentPathFiles([]);
+      setCurrentFolder(null);
+      return;
+    }
+    if (files.length > 0) {
       setCurrentPathFiles(() => {
         const currPathFiles = files.filter((file) => file.path === `${currentPath}/${file.name}`);
         return sortFiles(currPathFiles);
@@ -21,18 +27,18 @@ export const FileNavigationProvider = ({ children, initialPath }) => {
       setCurrentFolder(() => {
         return files.find((file) => file.path === currentPath) ?? null;
       });
-    } else {
-      setCurrentPathFiles([]);
-      setCurrentFolder(null);
     }
   }, [files, currentPath]);
 
   useEffect(() => {
-    if (!isMountRef.current && Array.isArray(files) && files.length > 0) {
+    if (!Array.isArray(files)) return;
+    if (files.length === 1 && files[0].isPlaceholder) {
+      setCurrentPath("");
+      return;
+    }
+    if (!isMountRef.current && files.length > 0) {
       setCurrentPath(files.some((file) => file.path === initialPath) ? initialPath : "");
       isMountRef.current = true;
-    } else if ((Array.isArray(files) && files.length === 0) || !files) {
-      setCurrentPath("");
     }
   }, [initialPath, files]);
 
