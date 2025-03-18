@@ -79,7 +79,7 @@ const FileList = ({
           ))}
         </>
       ) : (
-        folderLoaderPaths.length === 0 && <div className="empty-folder">This folder is empty.</div>
+        !showFolderLoader && <div className="empty-folder">This folder is empty.</div>
       )}
 
       {showFolderLoader && <FolderLoadingSkeleton layout={activeLayout} />}

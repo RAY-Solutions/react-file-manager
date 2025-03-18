@@ -21,6 +21,9 @@ export const FileNavigationProvider = ({ children, initialPath }) => {
       setCurrentFolder(() => {
         return files.find((file) => file.path === currentPath) ?? null;
       });
+    } else {
+      setCurrentPathFiles([]);
+      setCurrentFolder(null);
     }
   }, [files, currentPath]);
 
@@ -28,6 +31,8 @@ export const FileNavigationProvider = ({ children, initialPath }) => {
     if (!isMountRef.current && Array.isArray(files) && files.length > 0) {
       setCurrentPath(files.some((file) => file.path === initialPath) ? initialPath : "");
       isMountRef.current = true;
+    } else {
+      setCurrentPath("");
     }
   }, [initialPath, files]);
 
