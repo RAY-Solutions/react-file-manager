@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 const FilesContext = createContext();
 
 export const FilesProvider = ({ children, filesData, onError }) => {
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState(filesData);
   const [filesDisplayNames, setFilesDisplayNames] = useState(new Map());
 
   useEffect(() => {

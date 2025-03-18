@@ -12,15 +12,10 @@ import { useFileNavigation } from "../../contexts/FileNavigationContext";
 import { duplicateNameHandler } from "../../utils/duplicateNameHandler";
 import { validateApiCallback } from "../../utils/validateApiCallback";
 import { Permission, usePermissions } from "../../contexts/PermissionsContext";
+import { useFiles } from "../../contexts/FilesContext";
 
-const useFileList = (
-  onRefresh,
-  onFileOpen,
-  enableFilePreview,
-  triggerAction,
-  disableMultipleSelection,
-  folderLoaderPaths,
-) => {
+const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, disableMultipleSelection) => {
+  const { files } = useFiles();
   const [selectedFileIndexes, setSelectedFileIndexes] = useState([]);
   const [visible, setVisible] = useState(false);
   const [isSelectionCtx, setIsSelectionCtx] = useState(false);
@@ -140,7 +135,7 @@ const useFileList = (
       title: "Refresh",
       icon: <FiRefreshCw size={18} />,
       onClick: handleRefresh,
-      className: `${folderLoaderPaths && folderLoaderPaths.length > 0 ? "disable" : ""}`,
+      className: files.some((file) => file.isPlaceholder) ? "disable" : "",
       divider: true,
     },
     {

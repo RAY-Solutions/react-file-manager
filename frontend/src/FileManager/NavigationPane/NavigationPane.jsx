@@ -5,9 +5,11 @@ import { useFiles } from "../../contexts/FilesContext";
 import "./NavigationPane.scss";
 import FolderLoadingSkeleton from "../../components/FolderLoadingSkeleton/FolderLoadingSkeleton";
 
-const NavigationPane = ({ folderLoaderPaths, onFileOpen }) => {
+const NavigationPane = ({ onFileOpen }) => {
   const [foldersTree, setFoldersTree] = useState([]);
   const { files } = useFiles();
+
+  const showFolderLoader = files?.some((file) => file.isPlaceholder && file.path === "/");
 
   const createChildRecursive = (path, foldersStruct) => {
     if (!foldersStruct[path]) return []; // No children for this path (folder)
@@ -41,9 +43,9 @@ const NavigationPane = ({ folderLoaderPaths, onFileOpen }) => {
           })}
         </>
       ) : (
-        folderLoaderPaths.length === 0 && <div className="empty-nav-pane">Nothing here yet</div>
+        !showFolderLoader && <div className="empty-nav-pane">Nothing here yet</div>
       )}
-      {folderLoaderPaths.length > 0 && <FolderLoadingSkeleton forNavigation={true} />}
+      {showFolderLoader && <FolderLoadingSkeleton forNavigation={true} />}
     </div>
   );
 };

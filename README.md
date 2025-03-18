@@ -92,10 +92,24 @@ type File = {
   name: string;
   isDirectory: boolean;
   path: string;
+  isPlaceholder?: boolean; // Optional: Placeholder flag for loading states
   displayName?: string; // Optional: Display name for the file or folder(Not recommended for files)
   updatedAt?: string; // Optional: Last update timestamp in ISO 8601 format
   size?: number; // Optional: File size in bytes (only applicable for files)
 };
+```
+
+### About isPlaceholder Flag
+
+If the `isPlaceholder` flag is set to `true`, the file manager will display a placeholder for the
+object. This is useful for showing loading states while fetching data from an API.
+The `path` property in combination with `isPlaceholder` can be used to differentiate between
+the location of the placeholder.
+
+```
+// Placeholder for loading state
+{ name: "", path: "/", isPlaceholder: true } // Placeholder in the root directory
+
 ```
 
 ## ⚙️ Props
@@ -133,7 +147,6 @@ type File = {
 | `disableMultipleSelection` | boolean                                                                                                                     | A boolean flag indicating whether to disable multiple file selection. If set to `true`, only one file can be selected at a time. `default: false`.                                                                                                                                                                                                                                      |
 | `permissions`          | Array<[Permission](#-access-control--permissions)>                                                                             | An array of permission objects that define access control rules for files and directories. Use this prop to restrict or allow specific actions like read, write, delete, copy, and upload.                                                                                                                                                                                               |
 | `rootFolder`           | string                                                                                                                         | The name of the root folder to be displayed in the file manager. `default: "Home"`.                                                                                                                                                                                                                                                                                                      |
-| `folderLoaderPaths`    | Array<string>                                                                                                                  | An array of paths for which the folder loader should be displayed. The folder loader is a placeholder that appears while the folder contents are being loaded. Use this prop to specify the paths where the loader should be shown.                                                                                                                                                      |
 
 ## ⌨️ Keyboard Shortcuts
 

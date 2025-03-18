@@ -8,6 +8,7 @@ import useFileList from "./useFileList";
 import FilesHeader from "./FilesHeader";
 import "./FileList.scss";
 import FolderLoadingSkeleton from "../../components/FolderLoadingSkeleton/FolderLoadingSkeleton";
+import { useFiles } from "../../contexts/FilesContext";
 
 const FileList = ({
   onCreateFolder,
@@ -17,8 +18,8 @@ const FileList = ({
   enableFilePreview,
   triggerAction,
   disableMultipleSelection,
-  folderLoaderPaths,
 }) => {
+  const { files } = useFiles();
   const { currentPath, currentPathFiles } = useFileNavigation();
   const filesViewRef = useRef(null);
   const { activeLayout } = useLayout();
@@ -34,18 +35,17 @@ const FileList = ({
     selectedFileIndexes,
     clickPosition,
     isSelectionCtx,
-  } = useFileList(onRefresh, onFileOpen, enableFilePreview, triggerAction, disableMultipleSelection, folderLoaderPaths);
+  } = useFileList(onRefresh, onFileOpen, enableFilePreview, triggerAction, disableMultipleSelection);
 
   const contextMenuRef = useDetectOutsideClick(() => setVisible(false));
 
   const showFolderLoader = useMemo(() => {
     const path = currentPath || "/";
-    if (folderLoaderPaths?.length > 0 && folderLoaderPaths.includes(path)) {
+    if (files.some((file) => file.isPlaceholder && file.path === path)) {
       return true;
     }
     return false;
-  }, [currentPath, folderLoaderPaths]);
-
+  }, [currentPath, files]);
   return (
     <div
       ref={filesViewRef}
@@ -59,24 +59,26 @@ const FileList = ({
 
       {currentPathFiles?.length > 0 ? (
         <>
-          {currentPathFiles.map((file, index) => (
-            <FileItem
-              key={index}
-              index={index}
-              file={file}
-              onCreateFolder={onCreateFolder}
-              onRename={onRename}
-              onFileOpen={onFileOpen}
-              enableFilePreview={enableFilePreview}
-              triggerAction={triggerAction}
-              filesViewRef={filesViewRef}
-              selectedFileIndexes={selectedFileIndexes}
-              handleContextMenu={handleContextMenu}
-              setVisible={setVisible}
-              setLastSelectedFile={setLastSelectedFile}
-              disableMultipleSelection={disableMultipleSelection}
-            />
-          ))}
+          {currentPathFiles
+            .filter((file) => !file.isPlaceholder)
+            .map((file, index) => (
+              <FileItem
+                key={index}
+                index={index}
+                file={file}
+                onCreateFolder={onCreateFolder}
+                onRename={onRename}
+                onFileOpen={onFileOpen}
+                enableFilePreview={enableFilePreview}
+                triggerAction={triggerAction}
+                filesViewRef={filesViewRef}
+                selectedFileIndexes={selectedFileIndexes}
+                handleContextMenu={handleContextMenu}
+                setVisible={setVisible}
+                setLastSelectedFile={setLastSelectedFile}
+                disableMultipleSelection={disableMultipleSelection}
+              />
+            ))}
         </>
       ) : (
         !showFolderLoader && <div className="empty-folder">This folder is empty.</div>

@@ -48,7 +48,6 @@ const FileManager = ({
   fontFamily = "Nunito Sans, sans-serif",
   disableMultipleSelection = false,
   permissions = [],
-  folderLoaderPaths = [],
 }) => {
   const triggerAction = useTriggerAction();
   const { containerRef, colSizes, isDragging, handleMouseMove, handleMouseUp, handleMouseDown } = useColumnResize(
@@ -77,7 +76,6 @@ const FileManager = ({
                     onLayoutChange={onLayoutChange}
                     onRefresh={onRefresh}
                     triggerAction={triggerAction}
-                    folderLoaderPaths={folderLoaderPaths}
                   />
                   <section
                     ref={containerRef}
@@ -86,7 +84,7 @@ const FileManager = ({
                     className="files-container"
                   >
                     <div className="navigation-pane" style={{ width: colSizes.col1 + "%" }}>
-                      <NavigationPane folderLoaderPaths={folderLoaderPaths} onFileOpen={onFileOpen} />
+                      <NavigationPane onFileOpen={onFileOpen} />
                       <div
                         className={`sidebar-resize ${isDragging ? "sidebar-dragging" : ""}`}
                         onMouseDown={handleMouseDown}
@@ -103,7 +101,6 @@ const FileManager = ({
                         enableFilePreview={enableFilePreview}
                         triggerAction={triggerAction}
                         disableMultipleSelection={disableMultipleSelection}
-                        folderLoaderPaths={folderLoaderPaths}
                       />
                     </div>
                   </section>
@@ -140,6 +137,7 @@ FileManager.propTypes = {
       displayName: PropTypes.string,
       isDirectory: PropTypes.bool.isRequired,
       path: PropTypes.string.isRequired,
+      isPlaceholder: PropTypes.bool,
       updatedAt: dateStringValidator,
       size: PropTypes.number,
     }),
@@ -149,7 +147,6 @@ FileManager.propTypes = {
     headers: PropTypes.objectOf(PropTypes.string),
   }),
   isLoading: PropTypes.bool,
-  folderLoaderPaths: PropTypes.arrayOf(PropTypes.string),
   onCreateFolder: PropTypes.func,
   onFileUploading: PropTypes.func,
   onFileUploaded: PropTypes.func,

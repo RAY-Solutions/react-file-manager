@@ -13,15 +13,10 @@ import { validateApiCallback } from "../../utils/validateApiCallback";
 import { useDetectOutsideClick } from "../../hooks/useDetectOutsideClick";
 import "./Toolbar.scss";
 import { Permission, usePermissions } from "../../contexts/PermissionsContext";
+import { useFiles } from "../../contexts/FilesContext";
 
-const Toolbar = ({
-  allowCreateFolder = true,
-  allowUploadFile = true,
-  onLayoutChange,
-  onRefresh,
-  triggerAction,
-  folderLoaderPaths,
-}) => {
+const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutChange, onRefresh, triggerAction }) => {
+  const { files } = useFiles();
   const [showToggleViewMenu, setShowToggleViewMenu] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const { currentFolder } = useFileNavigation();
@@ -74,7 +69,7 @@ const Toolbar = ({
     {
       icon: <FiRefreshCw size={16} />,
       title: "Refresh",
-      disabled: folderLoaderPaths && folderLoaderPaths?.length > 0,
+      disabled: files.some((file) => file.isPlaceholder),
       onClick: () => {
         validateApiCallback(onRefresh, "onRefresh", currentFolder);
         setClipBoard(null);
