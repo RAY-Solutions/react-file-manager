@@ -31,7 +31,7 @@ export const FileNavigationProvider = ({ children, initialPath }) => {
     if (!isMountRef.current && Array.isArray(files) && files.length > 0) {
       setCurrentPath(files.some((file) => file.path === initialPath) ? initialPath : "");
       isMountRef.current = true;
-    } else {
+    } else if ((Array.isArray(files) && files.length === 0) || !files) {
       setCurrentPath("");
     }
   }, [initialPath, files]);
