@@ -36,9 +36,9 @@ const UploadItem = ({
       type: "upload",
       message: "Upload failed.",
       response: {
-        status: xhr.status,
-        statusText: xhr.statusText,
-        data: xhr.response,
+        status: xhr?.status,
+        statusText: xhr?.statusText,
+        data: xhr?.response,
       },
     };
 
@@ -55,20 +55,60 @@ const UploadItem = ({
     );
 
     setUploadFailed(true);
-
     onError(error, fileData.file);
   };
 
-  const fileUpload = (fileData) => {
-    if (!!fileData.error) return;
+  const fileUpload = async (fileData) => {
+    if (fileData.error) return;
 
-    return new Promise((resolve, reject) => {
+    const metadata = fileData?.appendData ?? {};
+    setIsUploading((prev) => ({ ...prev, [index]: true }));
+
+    // ✅ Pre-upload check
+    if (fileUploadConfig?.canUpload) {
+      const result = await fileUploadConfig.canUpload(fileData.file, metadata);
+      if (!result.success) {
+        setIsUploading((prev) => ({ ...prev, [index]: false }));
+        setFiles((prev) =>
+          prev.map((file, i) => {
+            if (index === i) {
+              return {
+                ...file,
+                error: result.message || "Upload failed.",
+              };
+            }
+            return file;
+          }),
+        );
+        return;
+      }
+    }
+
+    try {
+      let uploadUrl = fileUploadConfig.url;
+      const isSignedUpload = !!fileUploadConfig.generateSignedUrlEndpoint;
+
+      if (isSignedUpload) {
+        const res = await fetch(fileUploadConfig.generateSignedUrlEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(fileUploadConfig.headers || {}),
+          },
+          body: JSON.stringify({
+            fileName: fileData.file.name,
+            contentType: fileData.file.type,
+            ...metadata,
+          }),
+        });
+
+        if (!res.ok) throw new Error("Failed to get signed upload URL");
+        const { signedUrl } = await res.json();
+        uploadUrl = signedUrl;
+      }
+
       const xhr = new XMLHttpRequest();
       xhrRef.current = xhr;
-      setIsUploading((prev) => ({
-        ...prev,
-        [index]: true,
-      }));
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
@@ -78,44 +118,58 @@ const UploadItem = ({
       };
 
       xhr.onload = () => {
-        setIsUploading((prev) => ({
-          ...prev,
-          [index]: false,
-        }));
-        if (xhr.status === 200 || xhr.status === 201) {
+        setIsUploading((prev) => ({ ...prev, [index]: false }));
+
+        if (xhr.status >= 200 && xhr.status < 300) {
           setIsUploaded(true);
-          onFileUploaded(xhr.response);
-          resolve(xhr.response);
+
+          const response = isSignedUpload
+            ? JSON.stringify({
+                file: {
+                  name: fileData.file.name,
+                  size: fileData.file.size,
+                  mimeType: fileData.file.type,
+                  metadata,
+                  updatedAt: new Date().toISOString(),
+                },
+              })
+            : xhr.response;
+
+          onFileUploaded(response, fileData.file);
         } else {
-          reject(xhr.statusText);
           handleUploadError(xhr);
         }
       };
 
       xhr.onerror = () => {
-        reject(xhr.statusText);
         handleUploadError(xhr);
       };
 
-      xhr.open("POST", fileUploadConfig?.url, true);
-      const headers = fileUploadConfig?.headers;
-      for (let key in headers) {
-        xhr.setRequestHeader(key, headers[key]);
-      }
+      if (isSignedUpload) {
+        xhr.open("PUT", uploadUrl, true);
+        xhr.setRequestHeader("Content-Type", fileData.file.type || "application/octet-stream");
+        xhr.send(fileData.file);
+      } else {
+        xhr.open("POST", uploadUrl, true);
+        const headers = fileUploadConfig?.headers || {};
+        for (let key in headers) {
+          xhr.setRequestHeader(key, headers[key]);
+        }
 
-      const formData = new FormData();
-      const appendData = fileData?.appendData;
-      for (let key in appendData) {
-        appendData[key] && formData.append(key, appendData[key]);
+        const formData = new FormData();
+        for (let key in metadata) {
+          formData.append(key, metadata[key]);
+        }
+        formData.append("file", fileData.file);
+        xhr.send(formData);
       }
-      formData.append("file", fileData.file);
-
-      xhr.send(formData);
-    });
+    } catch (err) {
+      console.error("Upload failed", err);
+      handleUploadError({ status: 500, response: err.message });
+    }
   };
 
   useEffect(() => {
-    // Prevent double uploads with strict mode
     if (!xhrRef.current) {
       fileUpload(fileData);
     }
@@ -152,11 +206,7 @@ const UploadItem = ({
     }
   };
 
-  // File was removed by the user beacuse it was unsupported or exceeds file size limit.
-  if (!!fileData.removed) {
-    return null;
-  }
-  //
+  if (fileData.removed) return null;
 
   return (
     <li>
@@ -176,8 +226,8 @@ const UploadItem = ({
           ) : (
             <div
               className="rm-file"
-              title={`${!!fileData.error ? "Remove" : "Abort Upload"}`}
-              onClick={!!fileData.error ? () => handleFileRemove(index) : handleAbortUpload}
+              title={fileData.error ? "Remove" : "Abort Upload"}
+              onClick={fileData.error ? () => handleFileRemove(index) : handleAbortUpload}
             >
               <AiOutlineClose />
             </div>

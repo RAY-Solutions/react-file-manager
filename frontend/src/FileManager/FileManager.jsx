@@ -144,7 +144,9 @@ FileManager.propTypes = {
   ).isRequired,
   fileUploadConfig: PropTypes.shape({
     url: urlValidator,
+    generateSignedUrlEndpoint: urlValidator,
     headers: PropTypes.objectOf(PropTypes.string),
+    canUpload: PropTypes.func,
   }),
   isLoading: PropTypes.bool,
   onCreateFolder: PropTypes.func,

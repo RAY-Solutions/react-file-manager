@@ -120,7 +120,7 @@ the location of the placeholder.
 | `enableFilePreview`    | boolean                                                                                                                        | A boolean flag indicating whether to use the default file previewer in the file manager `default: true`.                                                                                                                                                                                                                                                                                |
 | `filePreviewPath`      | string                                                                                                                         | The base URL for file previews e.g.`https://example.com`, file path will be appended automatically to it i.e. `https://example.com/yourFilePath`.                                                                                                                                                                                                                                       |
 | `filePreviewComponent` | (file: [File](#-file-structure)) => React.ReactNode                                                                            | (Optional) A callback function that provides a custom file preview. It receives the selected file as its argument and must return a valid React node, JSX element, or HTML. Use this prop to override the default file preview behavior. Example: [Custom Preview Usage](#custom-file-preview).                                                                                         |
-| `fileUploadConfig`     | { url: string; headers?: { [key: string]: string } }                                                                           | Configuration object for file uploads. It includes the upload URL (`url`) and an optional `headers` object for setting custom HTTP headers in the upload request. The `headers` object can accept any standard or custom headers required by the server. Example: `{ url: "https://example.com/fileupload", headers: { Authorization: "Bearer" + TOKEN, "X-Custom-Header": "value" } }` |
+| `fileUploadConfig`     | { url?: string; generateSignedUrlEndpoint?: string; canUpload(file: File, metadata: Record<string, any>)?: Promise<{success: boolean; message: string;}>; headers?: { [key: string]: string } }                                                                           | Configuration object for file uploads. It includes the upload URL (`url`) or Generate signed url endpoint if the upload will done on a signed url like GCS signed URL and an optional `headers` object for setting custom HTTP headers in the upload request and `canUpload` callback function that return `{success: boolean; message: string;}` and responsible of allow and not allow upload(the message is displayed as error under file if `success` is `false`). The `headers` object can accept any standard or custom headers required by the server. Example: `{ url: "https://example.com/fileupload", headers: { Authorization: "Bearer" + TOKEN, "X-Custom-Header": "value" } }`. Check [Example of fileUploadConfig for signed URL](#7️⃣-example-of-fileuploadconfig-for-signed-url) for more details. |
 | `files`                | Array<[File](#-file-structure)>                                                                                                | An array of file and folder objects representing the current directory structure. Each object includes `name`, `isDirectory`, and `path` properties.                                                                                                                                                                                                                                    |
 | `fontFamily`           | string                                                                                                                         | The font family to be used throughout the component. Accepts any valid CSS font family (e.g., `'Arial, sans-serif'`, `'Roboto'`). You can customize the font styling to match your application's theme. `default: 'Nunito Sans, sans-serif'`.                                                                                                                                           |
 | `height`               | string \| number                                                                                                               | The height of the component `default: 600px`. Can be a string (e.g., `'100%'`, `'10rem'`) or a number (in pixels).                                                                                                                                                                                                                                                                      |
@@ -271,6 +271,30 @@ Permissions can be applied to:
   ]}
 />
 ```
+## 7️⃣ Example of fileUploadConfig for signed URL
+
+```jsx
+<FileManager
+  files={files}
+  fileUploadConfig={{
+    generateSignedUrlEndpoint: "https://example.com/generateSignedUrl",
+    canUpload: async (file, metadata) => {
+      const response = await fetch("https://example.com/canUpload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ file, metadata }),
+      });
+      return response.json(); // { success: true, message: "Upload allowed" } or { success: false, message: "Upload not allowed" }
+    },
+    headers: {
+      Authorization: "Bearer " + TOKEN,
+    },
+  }}
+/>
+```
+
 
 ## Custom File Preview
 
