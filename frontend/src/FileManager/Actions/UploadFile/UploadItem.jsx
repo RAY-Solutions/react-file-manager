@@ -93,7 +93,6 @@ const UploadItem = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            ...(fileUploadConfig.headers || {}),
           },
           body: JSON.stringify({
             fileName: fileData.file.name,
@@ -148,6 +147,10 @@ const UploadItem = ({
       if (isSignedUpload) {
         xhr.open("PUT", uploadUrl, true);
         xhr.setRequestHeader("Content-Type", fileData.file.type || "application/octet-stream");
+        const headers = fileUploadConfig?.headers || {};
+        for (let key in headers) {
+          xhr.setRequestHeader(key, headers[key]);
+        }
         xhr.send(fileData.file);
       } else {
         xhr.open("POST", uploadUrl, true);
