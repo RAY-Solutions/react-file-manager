@@ -5,7 +5,7 @@ import { FiRefreshCw } from "react-icons/fi";
 import { MdOutlineDelete, MdOutlineFileDownload, MdOutlineFileUpload } from "react-icons/md";
 import { PiFolderOpen } from "react-icons/pi";
 import { useClipBoard } from "../../contexts/ClipboardContext";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelection } from "../../contexts/SelectionContext";
 import { useLayout } from "../../contexts/LayoutContext";
 import { useFileNavigation } from "../../contexts/FileNavigationContext";
@@ -13,8 +13,16 @@ import { duplicateNameHandler } from "../../utils/duplicateNameHandler";
 import { validateApiCallback } from "../../utils/validateApiCallback";
 import { Permission, usePermissions } from "../../contexts/PermissionsContext";
 import { useFiles } from "../../contexts/FilesContext";
+import { getFileExtension } from "../../utils/getFileExtension";
 
-const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, disableMultipleSelection) => {
+const useFileList = (
+  onRefresh,
+  onFileOpen,
+  enableFilePreview,
+  disableFilePreviewIfExtensions,
+  triggerAction,
+  disableMultipleSelection,
+) => {
   const { files } = useFiles();
   const [selectedFileIndexes, setSelectedFileIndexes] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -28,6 +36,14 @@ const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, di
   const { currentPath, currentFolder, setCurrentPath, currentPathFiles, setCurrentPathFiles } = useFileNavigation();
   const { activeLayout, setActiveLayout } = useLayout();
 
+  const enableFilePreviewAdvanced = useMemo(() => {
+    if (!lastSelectedFile) return false;
+    if (lastSelectedFile.isDirectory) return false;
+    if (disableFilePreviewIfExtensions.length === 0 && enableFilePreview) return true;
+    const fileExtension = getFileExtension(lastSelectedFile.name);
+    return enableFilePreview && !disableFilePreviewIfExtensions.includes(fileExtension);
+  }, [lastSelectedFile, disableFilePreviewIfExtensions, enableFilePreview]);
+
   // Context Menu
   const handleFileOpen = () => {
     if (lastSelectedFile.isDirectory) {
@@ -38,7 +54,7 @@ const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, di
         onFileOpen(lastSelectedFile);
       }
     } else {
-      enableFilePreview && triggerAction.show("previewFile");
+      enableFilePreviewAdvanced && triggerAction.show("previewFile");
     }
     setVisible(false);
   };
@@ -230,6 +246,8 @@ const useFileList = (onRefresh, onFileOpen, enableFilePreview, triggerAction, di
     setCurrentPathFiles((prev) => {
       if (prev[selectedFileIndexes.at(-1)]) {
         prev[selectedFileIndexes.at(-1)].isEditing = true;
+      } else {
+        triggerAction.close();
       }
       return prev;
     });

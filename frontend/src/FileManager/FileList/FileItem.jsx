@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, useRef as UseRef } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useGesture } from "@use-gesture/react";
 import { FaRegFile, FaRegFolderOpen } from "react-icons/fa6";
 import { useFileIcons } from "../../hooks/useFileIcons";
@@ -13,6 +13,7 @@ import { useClipBoard } from "../../contexts/ClipboardContext";
 import { useLayout } from "../../contexts/LayoutContext";
 import Checkbox from "../../components/Checkbox/Checkbox";
 import { usePermissions, Permission } from "../../contexts/PermissionsContext";
+import { getFileExtension } from "../../utils/getFileExtension";
 
 const dragIconSize = 50;
 
@@ -22,6 +23,7 @@ const FileItem = ({
   onCreateFolder,
   onRename,
   enableFilePreview,
+  disableFilePreviewIfExtensions,
   onFileOpen,
   filesViewRef,
   selectedFileIndexes,
@@ -51,6 +53,14 @@ const FileItem = ({
 
   const isFileMoving = clipBoard?.isMoving && clipBoard.files.find((f) => f.name === file.name && f.path === file.path);
 
+  const enableFilePreviewAdvanced = useMemo(() => {
+    if (!file) return false;
+    if (file.isDirectory) return false;
+    if (disableFilePreviewIfExtensions.length === 0 && enableFilePreview) return true;
+    const fileExtension = getFileExtension(file.name);
+    return enableFilePreview && !disableFilePreviewIfExtensions.includes(fileExtension);
+  }, [file, disableFilePreviewIfExtensions, enableFilePreview]);
+
   /**
    * Opens file or navigates into a folder.
    */
@@ -61,14 +71,14 @@ const FileItem = ({
       setCurrentPath(file.path);
       setSelectedFiles([]);
     } else {
-      enableFilePreview && triggerAction.show("previewFile");
+      enableFilePreviewAdvanced && triggerAction.show("previewFile");
     }
   }, [
     file,
     isActionAllowed,
     selectedFiles,
     onFileOpen,
-    enableFilePreview,
+    enableFilePreviewAdvanced,
     triggerAction,
     setCurrentPath,
     setSelectedFiles,

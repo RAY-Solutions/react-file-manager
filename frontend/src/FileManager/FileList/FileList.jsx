@@ -16,6 +16,7 @@ const FileList = ({
   onFileOpen,
   onRefresh,
   enableFilePreview,
+  disableFilePreviewIfExtensions,
   triggerAction,
   disableMultipleSelection,
 }) => {
@@ -35,7 +36,14 @@ const FileList = ({
     selectedFileIndexes,
     clickPosition,
     isSelectionCtx,
-  } = useFileList(onRefresh, onFileOpen, enableFilePreview, triggerAction, disableMultipleSelection);
+  } = useFileList(
+    onRefresh,
+    onFileOpen,
+    enableFilePreview,
+    disableFilePreviewIfExtensions,
+    triggerAction,
+    disableMultipleSelection,
+  );
 
   const contextMenuRef = useDetectOutsideClick(() => setVisible(false));
 
@@ -70,6 +78,7 @@ const FileList = ({
                 onRename={onRename}
                 onFileOpen={onFileOpen}
                 enableFilePreview={enableFilePreview}
+                disableFilePreviewIfExtensions={disableFilePreviewIfExtensions}
                 triggerAction={triggerAction}
                 filesViewRef={filesViewRef}
                 selectedFileIndexes={selectedFileIndexes}

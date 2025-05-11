@@ -36,6 +36,7 @@ const FileManager = ({
   onError = () => {},
   layout = "grid-layout",
   enableFilePreview = true,
+  disableFilePreviewIfExtensions = [],
   maxFileSize,
   filePreviewPath,
   acceptedFileTypes,
@@ -99,6 +100,7 @@ const FileManager = ({
                         onFileOpen={onFileOpen}
                         onRefresh={onRefresh}
                         enableFilePreview={enableFilePreview}
+                        disableFilePreviewIfExtensions={disableFilePreviewIfExtensions}
                         triggerAction={triggerAction}
                         disableMultipleSelection={disableMultipleSelection}
                       />
@@ -166,6 +168,7 @@ FileManager.propTypes = {
   layout: PropTypes.oneOf(["grid-layout", "list-layout"]),
   maxFileSize: PropTypes.number,
   enableFilePreview: PropTypes.bool,
+  disableFilePreviewIfExtensions: PropTypes.arrayOf(PropTypes.string),
   filePreviewPath: urlValidator,
   acceptedFileTypes: PropTypes.string,
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
