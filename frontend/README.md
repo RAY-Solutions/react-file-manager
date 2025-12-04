@@ -16,6 +16,7 @@ An open-source React.js package for easy integration of a file manager into appl
 
 - **File & Folder Management**: View, upload, download, delete, copy, move, create, and rename files
   or folders seamlessly.
+- **Folder Downloads**: Download entire folders as ZIP archives with full permission control.
 - **Grid & List View**: Switch between grid and list views to browse files in your preferred layout.
 - **Navigation**: Use the breadcrumb trail and sidebar navigation pane for quick directory
   traversal.
@@ -27,7 +28,8 @@ An open-source React.js package for easy integration of a file manager into appl
   intuitive keyboard shortcuts.
 - **Drag-and-Drop**: Move selected files and folders by dragging them to the desired directory,
   making file organization effortless.
-- **Access Control & Permissions**: Define granular file and folder permissions including read, write, delete, copy, and upload restrictions.
+- **Column Sorting**: Sort files and folders by name, modification date, or size in list view with visual indicators for sort direction.
+- **Access Control & Permissions**: Define granular file and folder permissions including create, read, download, delete, copy, move, upload, and rename restrictions.
 
 ![React File Manager](https://github.com/user-attachments/assets/e68f750b-86bf-450d-b27e-fd3dedebf1bd)
 
@@ -148,6 +150,9 @@ the location of the placeholder.
 | `permissions`          | Array<[Permission](#-access-control--permissions)>                                                                             | An array of permission objects that define access control rules for files and directories. Use this prop to restrict or allow specific actions like read, write, delete, copy, and upload.                                                                                                                                                                                               |
 | `rootFolder`           | string                                                                                                                         | The name of the root folder to be displayed in the file manager. `default: "Home"`.                                                                                                                                                                                                                                                                                                      |
 | `disableFilePreviewIfExtensions` | string[]                                                                                                                     | An array of file extensions for which the file preview should be disabled. If a file's extension matches any of the specified extensions, the file preview will not be shown. Ex. ['pdf', 'exe']                                                                                                                                                                                                            |
+| `allowCustomPreviewForBlockedExtensions` | boolean                                                                                                      | (Optional) When set to `false` (default), extension blocking applies to both default and custom previews. When `true`, custom preview callbacks (via `filePreviewComponent`) will be invoked even for file extensions listed in `disableFilePreviewIfExtensions`. `default: false`                                                                                                                           |
+| `onSortChange`         | (sortConfig: { key: 'name' \| 'modified' \| 'size', direction: 'asc' \| 'desc' }) => void                     | (Optional) A callback function triggered when the sort configuration changes in list-layout. Receives an object with `key` (the column being sorted) and `direction` (ascending or descending). Useful for persisting user sort preferences.                                                                                                                                                                |
+| `onFolderChange`       | (folder: [File](#-file-structure) \| null, previousPath: string, currentPath: string) => void                 | (Optional) A callback function triggered when navigating between folders. Receives the folder object being navigated to (or null for root), the previous path, and the new current path. Useful for tracking navigation history or analytics.                                                                                                                                                               |
 ## ⌨️ Keyboard Shortcuts
 
 | **Action**                     | **Shortcut**       |
@@ -183,6 +188,7 @@ type Permission = {
   copy?: boolean;
   move?: boolean;
   read?: boolean;
+  download?: boolean;
   delete?: boolean;
   upload?: boolean;
   rename?: boolean;
@@ -196,6 +202,7 @@ type Permission = {
 - If **`applyTo`** is **not provided**, the rule applies to **both files and folders**.
 - If **`applyTo: "file"`**, the rule applies **only to files** in the given path.
 - If **`applyTo: "folder"`**, the rule applies **only to folders** in the given path.
+- **`read`** and **`download`** are independent - you can allow previewing without allowing downloads.
 
 ## 2️⃣ Permissions Table
 
@@ -204,7 +211,8 @@ type Permission = {
 | **`create`**    | ✅ Yes     | ✅ Yes      | Allows creating **new files and folders** inside a directory. Also allows **pasting files/folders into the folder**. |
 | **`copy`**      | ✅ Yes     | ✅ Yes      | Allows copying a file or folder **to another location**. |
 | **`move`**      | ✅ Yes     | ✅ Yes      | Allows moving (cut-paste) files or folders **to another location**. Requires `create` in the destination. |
-| **`read`**      | ✅ Yes     | ✅ Yes      | Allows opening/viewing or downloading (for files). |
+| **`read`**      | ✅ Yes     | ✅ Yes      | Allows opening/viewing/previewing files and folders. |
+| **`download`**  | ✅ Yes     | ✅ Yes      | Allows downloading files or folders (folders download as ZIP archives). |
 | **`delete`**    | ✅ Yes     | ✅ Yes      | Allows deleting files or folders. |
 | **`upload`**    | ❌ No      | ✅ Yes      | Allows **uploading external files** into a folder (not applicable to files). |
 | **`rename`**    | ✅ Yes     | ✅ Yes      | Allows renaming files or folders. |
@@ -220,7 +228,7 @@ type Permission = {
 ### ✅ Allow Pasting into `/Documents/`
 ```json
 [
-  { "path": "/Documents/**", "create": true } 
+  { "path": "/Documents/**", "create": true }
 ]
 ```
 📌 **Users can paste new files and folders inside `/Documents/`.**
@@ -228,7 +236,7 @@ type Permission = {
 ### ❌ Prevent Pasting into `/Restricted/`
 ```json
 [
-  { "path": "/Restricted/**", "create": false } 
+  { "path": "/Restricted/**", "create": false }
 ]
 ```
 📌 **Users cannot paste into `/Restricted/` because `create` is denied.**
@@ -267,6 +275,7 @@ Permissions can be applied to:
     { path: "/Pictures/Profile.jpg", read: true, delete: false, rename: true },
     { path: "/Uploads", upload: true, applyTo: "folder" },
     { path: "/Archive", move: true, copy: false },
+    { path: "/Confidential/**", read: true, download: false },
     { path: "/**", read: true, create: true, delete: true, rename: true },
   ]}
 />
@@ -300,9 +309,18 @@ Permissions can be applied to:
 
 The `FileManager` component allows you to provide a custom file preview by passing the
 `filePreviewComponent` prop. This is an optional callback function that receives the selected file
-as an argument and must return a valid React node, JSX element, or HTML.
+as an argument.
 
-### Usage Example
+### Supported Return Types
+
+The callback can return various types of content:
+- **React elements**: `<div>...</div>`, `<CustomComponent />`
+- **Strings**: `"Preview not available"`
+- **Numbers**: `404`
+- **null/undefined**: Falls back to the default preview
+- **Arrays/Fragments**: Multiple elements
+
+### Basic Usage Example
 
 ```jsx
 const CustomImagePreviewer = ({ file }) => {
@@ -313,6 +331,175 @@ const CustomImagePreviewer = ({ file }) => {
   // Other props...
   filePreviewComponent={(file) => <CustomImagePreviewer file={file} />}
 />;
+```
+
+### Conditional Preview with Fallback
+
+```jsx
+<FileManager
+  filePreviewComponent={(file) => {
+    // Return null to use default preview for certain file types
+    if (file.name.endsWith('.txt')) {
+      return null; // Use default preview for .txt files
+    }
+
+    // Custom preview for other files
+    return <CustomImagePreviewer file={file} />;
+  }}
+/>
+```
+
+### String Return Example
+
+```jsx
+<FileManager
+  filePreviewComponent={(file) => {
+    const ext = file.name.split('.').pop();
+    if (ext === 'exe') {
+      return "Executable files cannot be previewed for security reasons.";
+    }
+    return null; // Use default preview for others
+  }}
+/>
+```
+
+### Extension Blocking Behavior
+
+By default, extension blocking applies to **both default and custom previews**. Files with blocked extensions will not trigger the preview modal or custom preview callbacks.
+
+```jsx
+<FileManager
+  disableFilePreviewIfExtensions={['pdf', 'exe']}
+  filePreviewComponent={(file) => <CustomPreviewer file={file} />}
+  // Extension blocking applies to custom preview too (default behavior)
+  // allowCustomPreviewForBlockedExtensions={false}
+/>
+```
+
+To allow custom previews to **bypass extension blocking**:
+
+```jsx
+<FileManager
+  disableFilePreviewIfExtensions={['pdf', 'exe']}
+  filePreviewComponent={(file) => {
+    const ext = file.name.split('.').pop();
+    if (ext === 'pdf') {
+      return <div>PDF preview is disabled. Please download to view.</div>;
+    }
+    return null; // Use default for others
+  }}
+  allowCustomPreviewForBlockedExtensions={true} // Custom preview will be called even for blocked extensions
+/>
+```
+
+## 📊 Column Sorting
+
+In **list-layout** view, users can sort files and folders by clicking on column headers. The sort functionality includes:
+
+- **Sort by Name**: Alphabetical sorting (A-Z or Z-A)
+- **Sort by Modified**: Sort by last modified date (oldest to newest or newest to oldest)
+- **Sort by Size**: Sort by file size (smallest to largest or largest to smallest)
+
+### Features
+
+- Click a column header to sort by that column
+- Click the same column again to toggle between ascending (▲) and descending (▼)
+- Visual indicators show which column is currently sorted and the direction
+- Folders always appear before files, regardless of sort criteria
+- Sort configuration persists during folder navigation
+
+### Tracking Sort Changes
+
+Use the `onSortChange` callback to track or persist sort preferences:
+
+```jsx
+<FileManager
+  files={files}
+  layout="list-layout"
+  onSortChange={(config) => {
+    console.log(`Sorted by ${config.key} in ${config.direction} order`);
+    // Save to localStorage or state
+    localStorage.setItem('sortPreference', JSON.stringify(config));
+  }}
+/>
+```
+
+### Default Behavior
+
+- **Default sort**: Name, ascending
+- **Grid layout**: Sorting is handled automatically but column headers are not shown
+- **List layout**: Interactive column headers with sort indicators
+
+## 🔔 Event Callbacks
+
+The FileManager provides comprehensive event callbacks to track user interactions:
+
+### Navigation Tracking
+
+The `onFolderChange` callback fires when users navigate between folders:
+
+```jsx
+<FileManager
+  files={files}
+  onFolderChange={(folder, previousPath, currentPath) => {
+    console.log('Navigated from:', previousPath);
+    console.log('Navigated to:', currentPath);
+    console.log('Folder object:', folder);
+
+    // Track navigation for analytics
+    analytics.track('Folder Navigation', {
+      from: previousPath,
+      to: currentPath,
+      folderName: folder?.name,
+    });
+  }}
+/>
+```
+
+### Available Callbacks
+
+| Callback | Trigger | Parameters |
+|----------|---------|------------|
+| `onFolderChange` | User navigates to a different folder | `folder`, `previousPath`, `currentPath` |
+| `onSortChange` | User changes sort configuration in list-layout | `sortConfig` |
+| `onCopy` | Files/folders are copied | `files` |
+| `onCut` | Files/folders are cut | `files` |
+| `onPaste` | Files/folders are pasted | `files`, `destination`, `operationType` |
+| `onDelete` | Files/folders are deleted | `files` |
+| `onRename` | File/folder is renamed | `file`, `newName` |
+| `onFileUploaded` | File upload completes | `response`, `file` |
+| `onSelect` | File selection changes | `files` |
+| `onFileOpen` | File/folder is opened | `file` |
+| `onDownload` | Files are downloaded | `files` |
+| `onLayoutChange` | Layout is switched | `layout` |
+| `onRefresh` | File list is refreshed | `currentFolder` |
+
+### Example: Comprehensive Event Tracking
+
+```jsx
+<FileManager
+  files={files}
+  // Navigation events
+  onFolderChange={(folder, prev, curr) => {
+    console.log('Folder changed:', { folder, prev, curr });
+  }}
+
+  // Sort events
+  onSortChange={(config) => {
+    console.log('Sort changed:', config);
+  }}
+
+  // File operation events
+  onCopy={(files) => console.log('Copied:', files)}
+  onCut={(files) => console.log('Cut:', files)}
+  onPaste={(files, dest, type) => console.log('Pasted:', { files, dest, type })}
+  onDelete={(files) => console.log('Deleted:', files)}
+  onRename={(file, newName) => console.log('Renamed:', { file, newName })}
+
+  // Selection events
+  onSelect={(files) => console.log('Selected:', files)}
+  onFileOpen={(file) => console.log('Opened:', file)}
+/>
 ```
 
 ## 🤝 Contributing
