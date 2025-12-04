@@ -8,7 +8,7 @@ import { usePermissions, Permission } from "../../contexts/PermissionsContext";
 const FolderTree = ({ folder, onFileOpen }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isActive, setIsActive] = useState(false);
-  const { currentPath, setCurrentPath } = useFileNavigation();
+  const { currentPath, handleFolderChange } = useFileNavigation();
   const { isActionAllowed } = usePermissions();
 
   const handleFolderSwitch = () => {
@@ -16,7 +16,7 @@ const FolderTree = ({ folder, onFileOpen }) => {
     if (folder.path === currentPath) return;
     onFileOpen(folder);
     setIsActive(true);
-    setCurrentPath(folder.path);
+    handleFolderChange(folder);
   };
 
   const handleCollapseChange = (e) => {

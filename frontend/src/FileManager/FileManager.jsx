@@ -34,9 +34,12 @@ const FileManager = ({
   onFileOpen = () => {},
   onSelect,
   onError = () => {},
+  onSortChange = () => {},
+  onFolderChange = () => {},
   layout = "grid-layout",
   enableFilePreview = true,
   disableFilePreviewIfExtensions = [],
+  allowCustomPreviewForBlockedExtensions = false,
   maxFileSize,
   filePreviewPath,
   acceptedFileTypes,
@@ -66,7 +69,7 @@ const FileManager = ({
     <main className="file-explorer" onContextMenu={(e) => e.preventDefault()} style={customStyles}>
       <Loader loading={isLoading} />
       <FilesProvider filesData={files} onError={onError}>
-        <FileNavigationProvider initialPath={initialPath}>
+        <FileNavigationProvider initialPath={initialPath} onSortChange={onSortChange} onFolderChange={onFolderChange}>
           <SelectionProvider onDownload={onDownload} onSelect={onSelect}>
             <ClipBoardProvider onPaste={onPaste} onCut={onCut} onCopy={onCopy}>
               <LayoutProvider layout={layout}>
@@ -101,6 +104,8 @@ const FileManager = ({
                         onRefresh={onRefresh}
                         enableFilePreview={enableFilePreview}
                         disableFilePreviewIfExtensions={disableFilePreviewIfExtensions}
+                        allowCustomPreviewForBlockedExtensions={allowCustomPreviewForBlockedExtensions}
+                        hasCustomPreview={!!filePreviewComponent}
                         triggerAction={triggerAction}
                         disableMultipleSelection={disableMultipleSelection}
                       />
@@ -165,10 +170,13 @@ FileManager.propTypes = {
   onFileOpen: PropTypes.func,
   onSelect: PropTypes.func,
   onError: PropTypes.func,
+  onSortChange: PropTypes.func,
+  onFolderChange: PropTypes.func,
   layout: PropTypes.oneOf(["grid-layout", "list-layout"]),
   maxFileSize: PropTypes.number,
   enableFilePreview: PropTypes.bool,
   disableFilePreviewIfExtensions: PropTypes.arrayOf(PropTypes.string),
+  allowCustomPreviewForBlockedExtensions: PropTypes.bool,
   filePreviewPath: urlValidator,
   acceptedFileTypes: PropTypes.string,
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -185,6 +193,7 @@ FileManager.propTypes = {
       copy: PropTypes.bool,
       move: PropTypes.bool,
       read: PropTypes.bool,
+      download: PropTypes.bool,
       delete: PropTypes.bool,
       upload: PropTypes.bool,
       rename: PropTypes.bool,

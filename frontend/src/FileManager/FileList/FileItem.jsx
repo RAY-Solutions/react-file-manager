@@ -24,6 +24,8 @@ const FileItem = ({
   onRename,
   enableFilePreview,
   disableFilePreviewIfExtensions,
+  allowCustomPreviewForBlockedExtensions,
+  hasCustomPreview,
   onFileOpen,
   filesViewRef,
   selectedFileIndexes,
@@ -44,7 +46,7 @@ const FileItem = ({
   const { activeLayout } = useLayout();
   const iconSize = activeLayout === "grid-layout" ? 48 : 20;
   const fileIcons = useFileIcons(iconSize);
-  const { setCurrentPath, currentPathFiles } = useFileNavigation();
+  const { handleFolderChange, currentPathFiles } = useFileNavigation();
   const { setSelectedFiles, selectedFiles } = useSelection();
   const { clipBoard, handleCutCopy, setClipBoard, handlePasting } = useClipBoard();
   const dragIconRef = useRef(null);
@@ -56,10 +58,23 @@ const FileItem = ({
   const enableFilePreviewAdvanced = useMemo(() => {
     if (!file) return false;
     if (file.isDirectory) return false;
+
+    // If custom preview exists and it's allowed for blocked extensions, always enable
+    if (hasCustomPreview && allowCustomPreviewForBlockedExtensions) {
+      return true;
+    }
+
+    // Otherwise, apply extension blocking logic
     if (disableFilePreviewIfExtensions.length === 0 && enableFilePreview) return true;
     const fileExtension = getFileExtension(file.name);
     return enableFilePreview && !disableFilePreviewIfExtensions.includes(fileExtension);
-  }, [file, disableFilePreviewIfExtensions, enableFilePreview]);
+  }, [
+    file,
+    disableFilePreviewIfExtensions,
+    enableFilePreview,
+    hasCustomPreview,
+    allowCustomPreviewForBlockedExtensions,
+  ]);
 
   /**
    * Opens file or navigates into a folder.
@@ -68,7 +83,7 @@ const FileItem = ({
     if (!isActionAllowed(selectedFiles, Permission.READ)) return;
     onFileOpen(file);
     if (file.isDirectory) {
-      setCurrentPath(file.path);
+      handleFolderChange(file);
       setSelectedFiles([]);
     } else {
       enableFilePreviewAdvanced && triggerAction.show("previewFile");
@@ -78,9 +93,9 @@ const FileItem = ({
     isActionAllowed,
     selectedFiles,
     onFileOpen,
+    handleFolderChange,
     enableFilePreviewAdvanced,
     triggerAction,
-    setCurrentPath,
     setSelectedFiles,
   ]);
 

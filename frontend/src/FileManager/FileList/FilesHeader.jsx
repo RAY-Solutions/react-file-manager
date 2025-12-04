@@ -7,7 +7,7 @@ const FilesHeader = ({ unselectFiles, disableMultipleSelection }) => {
   const [showSelectAll, setShowSelectAll] = useState(false);
 
   const { selectedFiles, setSelectedFiles } = useSelection();
-  const { currentPathFiles } = useFileNavigation();
+  const { currentPathFiles, sortConfig, setSortConfig } = useFileNavigation();
 
   const allFilesSelected = useMemo(() => {
     return currentPathFiles.length > 0 && selectedFiles.length === currentPathFiles.length;
@@ -20,6 +20,14 @@ const FilesHeader = ({ unselectFiles, disableMultipleSelection }) => {
     } else {
       unselectFiles();
     }
+  };
+
+  const handleSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
   };
 
   return (
@@ -38,9 +46,27 @@ const FilesHeader = ({ unselectFiles, disableMultipleSelection }) => {
           />
         )}
       </div>
-      <div className="file-name">Name</div>
-      <div className="file-date">Modified</div>
-      <div className="file-size">Size</div>
+      <div className={`file-name ${sortConfig?.key === "name" ? "active" : ""}`} onClick={() => handleSort("name")}>
+        Name
+        {sortConfig?.key === "name" && (
+          <span className="sort-indicator">{sortConfig.direction === "asc" ? " ▲" : " ▼"}</span>
+        )}
+      </div>
+      <div
+        className={`file-date ${sortConfig?.key === "modified" ? "active" : ""}`}
+        onClick={() => handleSort("modified")}
+      >
+        Modified
+        {sortConfig?.key === "modified" && (
+          <span className="sort-indicator">{sortConfig.direction === "asc" ? " ▲" : " ▼"}</span>
+        )}
+      </div>
+      <div className={`file-size ${sortConfig?.key === "size" ? "active" : ""}`} onClick={() => handleSort("size")}>
+        Size
+        {sortConfig?.key === "size" && (
+          <span className="sort-indicator">{sortConfig.direction === "asc" ? " ▲" : " ▼"}</span>
+        )}
+      </div>
     </div>
   );
 };

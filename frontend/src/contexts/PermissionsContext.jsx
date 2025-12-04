@@ -10,6 +10,7 @@ export const Permission = Object.freeze({
   DELETE: "delete",
   UPLOAD: "upload",
   RENAME: "rename",
+  DOWNLOAD: "download",
 });
 
 const readablePermissionNames = {
@@ -20,6 +21,7 @@ const readablePermissionNames = {
   [Permission.DELETE]: "Delete",
   [Permission.UPLOAD]: "Upload",
   [Permission.RENAME]: "Rename",
+  [Permission.DOWNLOAD]: "Download",
 };
 
 const PermissionsContext = createContext();
@@ -46,6 +48,7 @@ const mergePermissions = (permissions) => {
         applyTo: perm.applyTo || existing.applyTo,
         copy: perm.copy !== undefined ? perm.copy && existing.copy : existing.copy,
         read: perm.read !== undefined ? perm.read && existing.read : existing.read,
+        download: perm.download !== undefined ? perm.download && existing.download : existing.download,
         write: perm.write !== undefined ? perm.write && existing.write : existing.write,
         delete: perm.delete !== undefined ? perm.delete && existing.delete : existing.delete,
         upload: perm.upload !== undefined ? perm.upload && existing.upload : existing.upload,
@@ -153,6 +156,7 @@ PermissionsProvider.propTypes = {
       copy: PropTypes.bool,
       move: PropTypes.bool,
       read: PropTypes.bool,
+      download: PropTypes.bool,
       delete: PropTypes.bool,
       upload: PropTypes.bool,
       rename: PropTypes.bool,

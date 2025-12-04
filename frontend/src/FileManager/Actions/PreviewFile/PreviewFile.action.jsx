@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { getFileExtension } from "../../../utils/getFileExtension";
 import Loader from "../../../components/Loader/Loader";
 import { useSelection } from "../../../contexts/SelectionContext";
@@ -39,8 +39,18 @@ const PreviewFileAction = ({ filePreviewPath, filePreviewComponent }) => {
     window.location.href = filePath;
   };
 
-  if (React.isValidElement(customPreview)) {
-    return customPreview;
+  // Handle custom preview with enhanced type checking
+  if (filePreviewComponent) {
+    // If callback returned a valid value (not null/undefined), render it
+    if (customPreview !== null && customPreview !== undefined) {
+      // Wrap non-element primitives in a div for consistent rendering
+      if (typeof customPreview === "string" || typeof customPreview === "number") {
+        return <div className="custom-preview-content">{customPreview}</div>;
+      }
+      // Return React elements, fragments, arrays, etc.
+      return customPreview;
+    }
+    // If callback returned null/undefined, fall through to default preview
   }
 
   return (
