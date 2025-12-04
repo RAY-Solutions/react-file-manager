@@ -87,7 +87,7 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
 
   const handleDownloadItems = () => {
     setShowDropdown(false);
-    if (isActionAllowed(selectedFiles, Permission.READ)) {
+    if (isActionAllowed(selectedFiles, Permission.DOWNLOAD)) {
       handleDownload();
       setSelectedFiles([]);
     }
@@ -135,8 +135,7 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
     {
       icon: <MdOutlineFileDownload size={19} />,
       text: "Download",
-      permission:
-        selectedFiles?.find((file) => !file.isDirectory) && isActionAllowed(selectedFiles, Permission.READ, false),
+      permission: isActionAllowed(selectedFiles, Permission.DOWNLOAD, false),
       onClick: handleDownloadItems,
     },
     {

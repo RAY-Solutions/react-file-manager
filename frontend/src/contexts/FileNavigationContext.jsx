@@ -4,12 +4,14 @@ import sortFiles from "../utils/sortFiles";
 
 const FileNavigationContext = createContext();
 
-export const FileNavigationProvider = ({ children, initialPath }) => {
+export const FileNavigationProvider = ({ children, initialPath, onSortChange, onFolderChange }) => {
   const { files } = useFiles();
   const isMountRef = useRef(false);
+  const previousPathRef = useRef("");
   const [currentPath, setCurrentPath] = useState("");
   const [currentFolder, setCurrentFolder] = useState(null);
   const [currentPathFiles, setCurrentPathFiles] = useState([]);
+  const [sortConfig, setSortConfig] = useState({ key: "name", direction: "asc" });
 
   useEffect(() => {
     if (!Array.isArray(files)) return;
@@ -21,14 +23,14 @@ export const FileNavigationProvider = ({ children, initialPath }) => {
     if (files.length > 0) {
       setCurrentPathFiles(() => {
         const currPathFiles = files.filter((file) => file.path === `${currentPath}/${file.name}`);
-        return sortFiles(currPathFiles);
+        return sortFiles(currPathFiles, sortConfig.key, sortConfig.direction);
       });
 
       setCurrentFolder(() => {
         return files.find((file) => file.path === currentPath) ?? null;
       });
     }
-  }, [files, currentPath]);
+  }, [files, currentPath, sortConfig]);
 
   useEffect(() => {
     if (!Array.isArray(files)) return;
@@ -42,6 +44,25 @@ export const FileNavigationProvider = ({ children, initialPath }) => {
     }
   }, [initialPath, files]);
 
+  useEffect(() => {
+    if (onSortChange) {
+      onSortChange(sortConfig);
+    }
+  }, [sortConfig, onSortChange]);
+
+  const handleFolderChange = (folder) => {
+    const newPath = folder ? folder.path : "";
+
+    // Only trigger callback if path actually changed and not on mount
+    if (isMountRef.current && newPath !== currentPath && onFolderChange) {
+      const prevPath = previousPathRef.current;
+      onFolderChange(folder, prevPath, newPath);
+    }
+
+    previousPathRef.current = newPath;
+    setCurrentPath(newPath);
+  };
+
   return (
     <FileNavigationContext.Provider
       value={{
@@ -51,6 +72,9 @@ export const FileNavigationProvider = ({ children, initialPath }) => {
         setCurrentFolder,
         currentPathFiles,
         setCurrentPathFiles,
+        sortConfig,
+        setSortConfig,
+        handleFolderChange,
       }}
     >
       {children}

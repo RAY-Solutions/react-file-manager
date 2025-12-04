@@ -12,7 +12,7 @@ const BreadCrumb = ({ rootFolder, onFileOpen }) => {
   const [showHiddenFolders, setShowHiddenFolders] = useState(false);
 
   const { filesDisplayNames } = useFiles();
-  const { currentPath, setCurrentPath } = useFileNavigation();
+  const { currentPath, handleFolderChange } = useFileNavigation();
   const breadCrumbRef = useRef(null);
   const foldersRef = useRef([]);
   const moreBtnRef = useRef(null);
@@ -38,7 +38,7 @@ const BreadCrumb = ({ rootFolder, onFileOpen }) => {
   const switchFolder = (folder) => {
     if (folder.path === currentPath) return;
     onFileOpen(folder);
-    setCurrentPath(folder.path);
+    handleFolderChange(folder);
   };
 
   const getBreadCrumbWidth = () => {

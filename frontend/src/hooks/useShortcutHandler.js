@@ -51,7 +51,7 @@ export const useShortcutHandler = (triggerAction, onRefresh, disableMultipleSele
   };
 
   const triggerDownload = () => {
-    if (isActionAllowed(selectedFiles, Permission.READ)) {
+    if (isActionAllowed(selectedFiles, Permission.DOWNLOAD)) {
       handleDownload();
     }
   };

@@ -17,6 +17,8 @@ const FileList = ({
   onRefresh,
   enableFilePreview,
   disableFilePreviewIfExtensions,
+  allowCustomPreviewForBlockedExtensions,
+  hasCustomPreview,
   triggerAction,
   disableMultipleSelection,
 }) => {
@@ -41,6 +43,8 @@ const FileList = ({
     onFileOpen,
     enableFilePreview,
     disableFilePreviewIfExtensions,
+    allowCustomPreviewForBlockedExtensions,
+    hasCustomPreview,
     triggerAction,
     disableMultipleSelection,
   );
@@ -79,6 +83,8 @@ const FileList = ({
                 onFileOpen={onFileOpen}
                 enableFilePreview={enableFilePreview}
                 disableFilePreviewIfExtensions={disableFilePreviewIfExtensions}
+                allowCustomPreviewForBlockedExtensions={allowCustomPreviewForBlockedExtensions}
+                hasCustomPreview={hasCustomPreview}
                 triggerAction={triggerAction}
                 filesViewRef={filesViewRef}
                 selectedFileIndexes={selectedFileIndexes}

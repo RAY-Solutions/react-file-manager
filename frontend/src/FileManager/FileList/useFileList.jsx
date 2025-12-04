@@ -20,6 +20,8 @@ const useFileList = (
   onFileOpen,
   enableFilePreview,
   disableFilePreviewIfExtensions,
+  allowCustomPreviewForBlockedExtensions,
+  hasCustomPreview,
   triggerAction,
   disableMultipleSelection,
 ) => {
@@ -39,10 +41,23 @@ const useFileList = (
   const enableFilePreviewAdvanced = useMemo(() => {
     if (!lastSelectedFile) return false;
     if (lastSelectedFile.isDirectory) return false;
+
+    // If custom preview exists and it's allowed for blocked extensions, always enable
+    if (hasCustomPreview && allowCustomPreviewForBlockedExtensions) {
+      return true;
+    }
+
+    // Otherwise, apply extension blocking logic
     if (disableFilePreviewIfExtensions.length === 0 && enableFilePreview) return true;
     const fileExtension = getFileExtension(lastSelectedFile.name);
     return enableFilePreview && !disableFilePreviewIfExtensions.includes(fileExtension);
-  }, [lastSelectedFile, disableFilePreviewIfExtensions, enableFilePreview]);
+  }, [
+    lastSelectedFile,
+    disableFilePreviewIfExtensions,
+    enableFilePreview,
+    hasCustomPreview,
+    allowCustomPreviewForBlockedExtensions,
+  ]);
 
   // Context Menu
   const handleFileOpen = () => {
@@ -81,7 +96,7 @@ const useFileList = (
   };
 
   const handleDownloadItems = () => {
-    if (isActionAllowed(selectedFiles, Permission.READ)) {
+    if (isActionAllowed(selectedFiles, Permission.DOWNLOAD)) {
       handleDownload();
     }
     setVisible(false);
@@ -215,8 +230,7 @@ const useFileList = (
       title: "Download",
       icon: <MdOutlineFileDownload size={18} />,
       onClick: handleDownloadItems,
-      hidden: lastSelectedFile?.isDirectory,
-      className: `${isActionAllowed(selectedFiles, Permission.READ, false) ? "" : "disable"}`,
+      className: `${isActionAllowed(selectedFiles, Permission.DOWNLOAD, false) ? "" : "disable"}`,
     },
     {
       title: "Delete",
