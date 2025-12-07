@@ -64,6 +64,7 @@ const Toolbar = ({ allowCreateFolder = true, allowUploadFile = true, onLayoutCha
     {
       icon: activeLayout === "grid-layout" ? <BsGridFill size={16} /> : <FaListUl size={16} />,
       title: "Change View",
+      disabled: files.some((file) => file.isPlaceholder),
       onClick: () => setShowToggleViewMenu((prev) => !prev),
     },
     {
